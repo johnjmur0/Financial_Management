@@ -1,0 +1,5 @@
+For R:
+  Tidyverse at all times
+  variables and functions: snake case
+  COlumn names: upper case snake case
+  

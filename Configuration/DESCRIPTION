@@ -1,0 +1,9 @@
+Package: Configuration
+Title: Config settings for Financial_Management
+Version: 0.1.0
+Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
+Description: Personal Finances
+Depends: R (>= 3.1.0)
+License: Internal
+Encoding: UTF-8
+LazyData: true
