@@ -81,6 +81,9 @@ read_most_recent_transaction_file = function(overview_df)
 #' @examples
 get_monthly_summary = function(transactions)
 {
+  df_col_has_value(transactions, "Date", "Date")
+  df_col_has_value(transactions, "Amount", "numeric")
+  
   transactions %>% arrange(Date) %>% 
     
     mutate(Year = lubridate::year(Date), 
@@ -90,9 +93,9 @@ get_monthly_summary = function(transactions)
            Income = if_else(Amount > 0, Amount, 0),
            Expense = if_else(Amount < 0, Amount, 0)) %>% 
     
-    group_by(Year_Month) %>% mutate(Expense = sum(Expense),
-                                    Income = sum(Income),
-                                    Profit = Income + Expense)
+    group_by(Year_Month) %>% mutate(Expense_Total_Monthly = sum(Expense),
+                                    Income_Total_Monthly = sum(Income),
+                                    Profit_Total_Monthly = Income_Total_Monthly + Expense_Total_Monthly)
 }
 
 #' Title
