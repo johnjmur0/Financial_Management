@@ -1,7 +1,3 @@
-getStartingSalary = function() { 140000 }
-getMinimumSavings_Months = function(months = 8) { months }
-getAvgRaise = function() { 4200 }
-
 getInvestments = function(categoryList, investment_Contribution_Roth, investment_Contribution_IRA)
 {
   netIncome = getNetIncome(categoryList)
@@ -30,9 +26,10 @@ getBonus_Taxes = function(categoryList, transactions, baseSalary)
   return (taxRefund + bonus)
 }
 
-createStructureProjections = function(categoryList, transactions, years, zeroGrowth)
+createStructureProjections = function(categoryList, transactions, years, zeroGrowth, config_file)
 {
   baseSalary = getStartingSalary()
+  fiscal_month_start = get_fiscal_year_start(config_file)
   
   raise = if_else(!zeroGrowth, getAvgRaise(), 0)
 
@@ -41,8 +38,8 @@ createStructureProjections = function(categoryList, transactions, years, zeroGro
     bonus = categoryList %>% getBonus_Taxes(transactions, (baseSalary))
     raise = if_else(year > minYear, raise, 0)
 
-    list(tibble("TimeAdj" = createDateTime(year, 2), "Var" = "BaseSalary", "Amt" = raise, "Type"="Credit"),
-         tibble("TimeAdj" = createDateTime(year, 3), "Var" = "Total_Savings", "Amt" = bonus, "Type" = "Credit")) %>% 
+    list(tibble("TimeAdj" = createDateTime(year, fiscal_month_start), "Var" = "BaseSalary", "Amt" = raise, "Type"="Credit"),
+         tibble("TimeAdj" = createDateTime(year, fiscal_month_start + 1), "Var" = "Total_Savings", "Amt" = bonus, "Type" = "Credit")) %>% 
       
       bind_rows() %>% dplyr::filter(Amt != 0)
     
@@ -53,31 +50,34 @@ createStructureProjections = function(categoryList, transactions, years, zeroGro
   categoryList=categoryList) %>% bind_rows()
 }
 
-getCurrentBalances = function(forecastTime)
+getCurrentBalances = function(account_df, config_file, forecast_time)
 {
-  baseSalary = getStartingSalary()
-  #idk how to download from Mint - easier to copy
-  currentBalances = tibble("Timestamp" = forecastTime %>% first(),
-                           "Total_Savings" = (45783.44 + 13835.92 + 60),
-                           "Investments" = (49861 + 8016.5 + 1324.59),
-                           "Public_Loans" = -20232.52,
-                           "Private_Loans" = 0,
-                           "BaseSalary" = baseSalary)
+  total_df = account_df %>% group_by(Account_Class) %>% summarise(Sum = sum(Account_Balance))
+  
+  #TODO figure out how to handle multiple loans
+  currentBalances = tibble("Timestamp" = forecast_time %>% first(),
+                           "Total_Savings" = total_df %>% dplyr::filter(Account_Class == "bank") %>% pull(Sum),
+                           "Investments" = total_df %>% dplyr::filter(Account_Class == "investment") %>% pull(Sum),
+                           "Public_Loans" = total_df %>% dplyr::filter(Account_Class == "loans") %>% pull(Sum),
+                           "BaseSalary" = get_base_salary(config_file))
 }
 
-getStrucutralData = function(forecastTime, growthRate = 0)
+getStrucutralData = function(account_df, transactions, config_file, forecast_time, growth_rate = 0)
 {
-  loanStructure = tibble("Timestamp" = forecastTime,
-                         "Public_Loan_Payment" = 380.81,
-                         "Public_Loan_Interest_Rate" = .054,
-                         "Private_Loan_Payment" = 0,
-                         "Private_Loan_Interest_Rate" = 0,
+  #TODO same as above, handle multiple loans
+  interest_rate = account_df %>% dplyr::filter(Account_Class == "loan" & Interest_Rate > 0) %>% pull(Interest_Rate)
+  loan_payment = transactions %>% dplyr::filter(str_detect(category, "loan")) %>% data.table::first() %>% pull(Amount)
+  
+  loanStructure = tibble("Timestamp" = forecast_time,
+                         "Public_Loan_Payment" = loan_payment,
+                         "Public_Loan_Interest_Rate" = interest_rate,
                          
-                         "Investment_Contribution_IRA" = (.08 + .04),
-                         "Investment_Contribution_Roth" = .059299,
-                         "Investment_Return_Rate" = growthRate)
+                         #Connect to fidelity api for this?
+                         "401k_Total_Investment" = get_401k_contribution_annual(config_file)
+                         "Investment_Return_Rate" = growth_rate)
 }
 
+#Replace with config file
 getTimeAdjustments = function(categoryList, transactions, years, zeroGrowth = FALSE)
 {
   additionalAdjustments = createStructureProjections(categoryList, transactions, years, zeroGrowth)

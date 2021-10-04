@@ -1,6 +1,6 @@
 library(lubridate)
 
-context("Testing processing of Mint transactions")
+context("Test processing of Mint transactions")
 
 test_that("Transaction files are parsed correctly", {
   
@@ -14,7 +14,7 @@ test_that("Transaction files are parsed correctly", {
   testthat::expect_equal(expected, result)
 })
 
-test_that("Test Summarize transactions", {
+test_that("Test summarize monthly transactions", {
   
   test_transactions = tibble("Date"=c("1/1/2019", "2/1/2019", "3/1/2019", "4/1/2019"), 
                              "Description"=c("foo", "foo", "foo", "foo"),
@@ -27,7 +27,3 @@ test_that("Test Summarize transactions", {
   #These columns are sufficient conditions that the rest of columns are correct
   testthat::expect_true(all(c("Year_Month", "Profit_Total_Monthly") %in% colnames(result)))
 })
-
-#shell("python C:/source/mintapi/mintapi/api.py --keyring --headless --session-path=None --mfa-method=soft-token --mfa-token=Q5ISNFBVWXM5FEJ5KKUI2WUXRSHZT5PS  johnjmur0@gmail.com --accounts --filename=C:/Users/JackMurphy/Downloads/Mint/accounts_10-03-2021_2.json")
-
-#ret = shell("python C:/source/mintapi/mintapi/api.py --keyring --headless --session-path=None --mfa-method=soft-token --mfa-token=Q5ISNFBVWXM5FEJ5KKUI2WUXRSHZT5PS  johnjmur0@gmail.com --investments --filename=C:/Users/JackMurphy/Downloads/Mint/investments_10-03-2021_2.json")

@@ -1,27 +1,30 @@
-mint_getHistoricalSummary = function(historicalStartDate)
+mint_getHistoricalSummary = function(transactions, historical_start_date)
 {
-  transactions = getMostRecentFile() %>% processTimeCharges() %>% 
+  transactions = transactions %>% get_monthly_summary() %>% 
     
+    #Look at outliers from user config file, integrate with monthly_category_sum
     #Cut out big one-time musical purchases - handle separately
-    dplyr::filter(!(Category == "Hobbies" & Amount < -500))
+    #dplyr::filter(!(Category == "Hobbies" & Amount < -500))
   
-  categoryList = getCategoryList(transactions, historicalStartDate, includeOutlier = TRUE)
+  category_df = transactions %>% monthly_category_sum(historical_start_date, include_outlier = TRUE)
   
-  historicalSpendAnalysis(categoryList)
+  historicalSpendAnalysis(category_df)
 }
 
-mint_getForecastSummary = function(forecastDateRange, historicalStartDate)
+mint_getForecastSummary = function(transactions, forecast_date_range, historicalStartDate)
 {
-  forecastStart = min(forecastDateRange)
-  forecastEnd = max(forecastDateRange)
-  years = seq(lubridate::year(forecastStart), lubridate::year(forecastEnd))
-  forecastTime = seq(forecastStart, forecastEnd, by = "month")
+  forecast_start = min(forecast_date_range)
+  forecast_end = max(forecast_date_range)
   
-  transactions = getMostRecentFile() %>% processTimeCharges()
+  years = seq(lubridate::year(forecast_start), lubridate::year(forecast_end))
+  forecast_time_series = seq(forecast_start, forecast_end, by = "month")
   
-  categoryList = getCategoryList(transactions, historicalStartDate)
+  transactions = transactions %>% get_monthly_summary()
   
-  timeAdjustmentDf = categoryList %>% getTimeAdjustments(transactions, years, zeroGrowth = FALSE) %>% 
+  category_df = transactions %>% monthly_category_sum(historical_start_date)
+  
+  #Get these from config
+  timeAdjustmentDf = category_df %>% getTimeAdjustments(transactions, years, zeroGrowth = FALSE) %>% 
     dplyr::filter(between(TimeAdj, forecastStart, forecastEnd))
   
   loanStructure = forecastTime %>% getStrucutralData(growthRate)
@@ -51,9 +54,8 @@ mint_getForecastSummary = function(forecastDateRange, historicalStartDate)
 #print (finalDf)
 
 
-
 ###########################    INPUTS    #################################
 startDate = createDateTime(2020, 1)
 endDate = createDateTime(2021, 12)
-historicalStartDate = createDateTime(2018, 1)
+historical_start_date = create_datetime(2018, 1)
 

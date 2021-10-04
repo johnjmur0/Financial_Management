@@ -81,53 +81,51 @@ read_most_recent_transaction_file = function(overview_df)
 #' @examples
 get_monthly_summary = function(transactions)
 {
-  df_col_has_value(transactions, "Date", "Date")
-  df_col_has_value(transactions, "Amount", "numeric")
+  df_col_has_value(transactions, "date", "Date")
+  df_col_has_value(transactions, "amount", "numeric")
   
-  transactions %>% arrange(Date) %>% 
-    
-    mutate(Year = lubridate::year(Date), 
-           Month = lubridate::month(Date),
+  transactions %>% arrange(date) %>% 
+  
+    mutate(Amount = if_else(transaction_type == "debit", amount * -1, amount),
+           Year = lubridate::year(date), 
+           Month = lubridate::month(date),
            Year_Month = ((Year) * 12) + Month,
            
            Income = if_else(Amount > 0, Amount, 0),
            Expense = if_else(Amount < 0, Amount, 0)) %>% 
+    
+    select(-amount) %>% rename(Date = date) %>%
     
     group_by(Year_Month) %>% mutate(Expense_Total_Monthly = sum(Expense),
                                     Income_Total_Monthly = sum(Income),
                                     Profit_Total_Monthly = Income_Total_Monthly + Expense_Total_Monthly)
 }
 
-#' Title
+#' get monthly sum of spending by category
 #'
 #' @param transactions todo 
-#' @param startDate todo
-#' @param includeOutlier todo 
+#' @param start_date date to keep transactions 
+#' @param include_outlier whether to remove outliers as defined in user config
 #'
 #' @return
 #' @export
 #'
 #' @examples
-getCategoryList = function(transactions, startDate, includeOutlier = FALSE)
+monthly_category_sum = function(transactions, start_date, include_outlier = FALSE)
 {
-  if(!includeOutlier) {
-    
-    transactions = transactions %>%
-      #Outlier - bunch of one-time musical purchases
-      filter(!(Year == 2018 & Month == 12)) %>% 
-      filter(Category != "Bonus")
+  if(!include_outlier) {
+    #reference config file for definition of outliers
   }
   
-  categories = transactions %>%
-    filter(Date > startDate) %>%
-    
+  #Could I do this without saving data?
+  categories = transactions %>% filter(Date > start_date) %>%
     mutate(Type = if_else(Amount < 0, "Debit", "Credit"))
   
   credits = categories %>% filter(Type == "Credit") %>% 
-    group_by(Year, Month, Category, Type) %>% summarise(meanAnnualAcct = sum(Amount))
+    group_by(Year, Month, category, Type) %>% summarise(meanAnnualAcct = sum(Amount))
   
   debits = categories %>% filter(Type == "Debit") %>% 
-    group_by(Year, Month, Category, Type) %>% summarise(meanAnnualAcct = sum(Amount))
+    group_by(Year, Month, category, Type) %>% summarise(meanAnnualAcct = sum(Amount))
   
   categoryList = bind_rows(credits, debits) %>% 
     na.omit() %>% filter(meanAnnualAcct != 0)

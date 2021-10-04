@@ -40,6 +40,26 @@
 #   foo(config_template)
 # }
 
+#Note sure how to handle user name at this point
+get_user_config = function(user_name)
+{
+  config_filePath = file.path("./Config_Files", str_c("Config", user_name, sep = "_"))
+  config_file = rjson::fromJSON(file = config_filePath)
+}
+
+get_base_salary = function(config_file) { config_file[["Base_Salary"]] }
+
+get_min_savings_month = function(config_file) { config_file[["Minimum_Monthly_Savings"]] }
+
+get_401k_contribution_annual = function(config_file) { config_file[["Annual_401k_Contribution"]] }
+
+get_average_raise = function(config_file) 
+{ 
+  nominal_raise = config_file[["Average_Raise"]] * config_file[["Base_Salary"]]
+}
+
+get_fiscal_year_start = function(config_file) { config_file[["Fiscal_Year_Start"]] }
+
 #TODO Memoize this
 read_table = function(userName, tableName)
 {
