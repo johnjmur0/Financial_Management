@@ -127,7 +127,7 @@ monthly_category_sum = function(transactions, config_file, start_date, include_o
       
       },transactions=transactions) %>% bind_rows() %>% distinct()
       
-      #TODO handle outlier categories, plus category + amount combod
+      #TODO handle outlier categories, plus category + amount combo
   }
   
   #Could I do this without saving data?
@@ -144,74 +144,55 @@ monthly_category_sum = function(transactions, config_file, start_date, include_o
     na.omit() %>% filter(meanAnnualAcct != 0)
 }
 
-#' Title
-#'
-#' @param categoryList todo 
-#' @param returnDf todo
-#' @param removeIncome todo
-#' @param removeLoans todo
-#'
-#' @return
-#' @export
-#'
-#' @examples
-getMonthlyAvgSpend = function(categoryList, returnDf = FALSE, removeIncome = TRUE, removeLoans = TRUE)
+
+get_avg_spend_monthly = function(category_df, transactions, return_df = FALSE, remove_income = TRUE, remove_loans = TRUE)
 {
-  dir = getRootDir()
-  allTransactions = list.files(dir, full.names = TRUE)
-  mostRecentFileDate = getRecentFileName(allTransactions)
-  
+  #TODO handle these categories in config
   #hide includes lump student loan payments, mattress, air/credit card are vacations
   nonRepeatableCategories = c("Air Travel", "Hide from Budgets & Trends", "Credit Card Payment")
   #Music purchases, nonrepeatable only greater than 1k
   #largeOneTimeCategories = c("Entertainment", "Hobbies")
   
-  if (removeIncome) {
-    categoryList = categoryList %>% filter(removeIncome, Type == "Debit")
+  if (remove_income) {
+    category_df = category_df %>% dplyr::filter(Type == "Debit")
   } 
   
-  if (removeLoans) {
-    categoryList = categoryList %>% filter(!(Category %in% c("Student Loan", "Education")))
+  if (remove_loans) {
+    category_df = category_df %>% dplyr::filter(!(category %in% c("Student Loan", "Education")))
   }
 
-  monthlySpend = categoryList %>% 
+  spend_monthly = category_df %>% 
       
-    #student loan payments handles seperately
-    filter(!(Category %in% nonRepeatableCategories)) %>%
+    dplyr::filter(!(category %in% nonRepeatableCategories)) %>%
     
-    group_by(Year, Month, Category) %>% summarise(totalSpend = sum(meanAnnualAcct)) %>% ungroup()
+    group_by(Year, Month, category) %>% summarise(totalSpend = sum(meanAnnualAcct)) %>% ungroup()
   
-  spendDf = monthlySpend %>% spread(key=Category, value=totalSpend) %>% 
+  spend_df = spend_monthly %>% spread(key=category, value=totalSpend) %>% 
     
-    mutate_if(is.double, funs(if_else(is.na(.), 0, .))) %>% gather(key=Category, value=totalSpend, -Year, -Month)
+    mutate_if(is.double, funs(if_else(is.na(.), 0, .))) %>% gather(key=category, value=totalSpend, -Year, -Month)
   
-  if(returnDf) {
+  if(return_df) {
     return (spendDf)
   }
     
-  spendDf %>% write_csv(file.path(dirname(dir), "SpendingData", str_c("Year_Month_Category_Spend_", mostRecentFileDate, ".csv")))
+  #spendDf %>% write_csv(file.path(dirname(dir), "SpendingData", str_c("Year_Month_Category_Spend_", mostRecentFileDate, ".csv")))
     
-  spendDf %>% group_by(Year, Month) %>% summarise(meanSpend = sum(totalSpend)) %>%
+  spend_df %>% group_by(Year, Month) %>% summarise(meanSpend = sum(totalSpend)) %>%
     
     ungroup() %>% summarise(spend = mean(meanSpend)) %>% pull()
 }
 
-#' Title
-#'
-#' @param categoryList todo 
-#' @param incomeStartDate todo
-#'
-#' @return
-#' @export
-#'
-#' @examples
-getNetIncome = function(categoryList, incomeStartDate)
+get_net_income = function(category_df, start_date = NULL)
 {
-  categoryList %>% filter(Type == "Credit") %>%
+  start_date = if_else(is.null(start_date), 
+                       lubridate::ymd(str_c(min(category_df[["Year"]]), min(category_df[["Month"]]), 1, sep="/")),
+                       start_date)
+  
+  category_df %>% filter(Type == "Credit") %>%
     
-    filter(!str_detect(Category, "Tax") | !(Category == "Income" & meanAnnualAcct > 1000)) %>% 
+    dplyr::filter(!str_detect(category, "Tax") | !(category == "Income" & meanAnnualAcct > 1000)) %>% 
     
-    filter(Year >= lubridate::year(IncomeStartDate) & Month >= lubridate::month(IncomeStartDate) & 
+    dplyr::filter(Year >= lubridate::year(start_date) & Month >= lubridate::month(start_date) & 
                     #current month almost always incomplete
                     !(Year == lubridate::year(Sys.time()) & Month == lubridate::month(Sys.time()))) %>% 
     

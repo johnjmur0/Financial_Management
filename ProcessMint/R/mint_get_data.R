@@ -21,8 +21,8 @@ get_mint_datasets = function(config_file)
   
   ret_data = lapply(data_filePaths %>% df_to_list(), function(data_request, shell_cmd) {
     
-    print (str_c("Processing command", shell_cmd, sep = " "))
     shell_cmd = str_c(shell_cmd, data_request[["Param"]], str_c("--filename=", data_request[["FileName"]]), sep = " ")
+    print (str_c("Processing command", shell_cmd, sep = " "))
     
     result = shell(shell_cmd)
     
@@ -32,7 +32,7 @@ get_mint_datasets = function(config_file)
     }
     
     if (str_detect(data_request[['FileName']], ".json")) {
-      ret = rjson::fromJSON(file = data_request[['FileName']])
+      ret = rjson::fromJSON(paste(readLines(data_request[['FileName']]), collapse = ""))
     }
     else if (str_detect(data_request[['FileName']], ".csv")) {
       ret = readr::read_csv(data_request[['FileName']])

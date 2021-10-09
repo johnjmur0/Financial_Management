@@ -7,7 +7,7 @@ mint_getHistoricalSummary = function(transactions, config_file, historical_start
   historicalSpendAnalysis(category_df)
 }
 
-#' Create financial forecast based on past data
+#' Create financial projections based on past data and manual adjustments
 #'
 #' @param transactions df of transactions from mint by category
 #' @param historical_start_date start of historical data
@@ -18,7 +18,7 @@ mint_getHistoricalSummary = function(transactions, config_file, historical_start
 #' @export
 #'
 #' @examples
-mint_getForecastSummary = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
+mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 {
   forecast_start = min(forecast_date_range)
   forecast_end = max(forecast_date_range)
@@ -29,36 +29,31 @@ mint_getForecastSummary = function(transactions, account_df, config_file, foreca
   transactions = transactions %>% get_monthly_summary()
   category_df = transactions %>% monthly_category_sum(config_file, historical_start_date)
   
-  manual_adjustments = category_df %>% get_manual_adjustments(transactions, config_file, years, zeroGrowth = FALSE) %>% 
+  manual_adjustments = category_df %>% get_manual_adjustments(transactions, 
+                                                              config_file, 
+                                                              years, 
+                                                              zeroGrowth = FALSE) %>% 
+    
     dplyr::filter(between(TimeAdj, forecast_start, forecast_end))
   
-  account_changes = account_df %>% get_account_changes(transactions, config_file, forecast_date_range, 
-                                                       Configuration::get_investment_growth(config_file))
+  fixed_payments = account_df %>% get_fixed_payments(transactions, 
+                                                     config_file, 
+                                                     forecast_time_series, 
+                                                     Configuration::get_investment_growth(config_file))
   
-  current_accounts = account_df %>% get_account_balances(config_file, forecast_date_range)
+  current_accounts = account_df %>% get_account_balances(config_file, forecast_time_series)
   
-  forecast_df = category_df %>% createFinalDf(transactions, 
-                                              current_accounts, 
-                                              account_changes, 
-                                              forecast_date_range) %>%
+  projection_df = category_df %>% get_projection_inputs(transactions, 
+                                                        current_accounts, 
+                                                        fixed_payments, 
+                                                        forecast_time_series,
+                                                        historical_start_date) %>%
     
-    predictDf_Forward(current_accounts, category_df, Configuration::get_min_savings_month(config_file))
+    creat_projection_df(manual_adjustments, category_df, fixed_payments, Configuration::get_min_savings_month(config_file))
   
-  if (finalDf %>% select(Total_Loans) %>% colSums() == 0) {
-    finalDf = finalDf %>% select(-contains("Loan"))
+  if (projection_df %>% select(Total_Loans) %>% colSums() == 0) {
+    projection_df = projection_df %>% select(-contains("Loan"))
   }
   
-  return (finalDf)
+  return (projection_df)
 }
-
-#TODO - break out forecast vs historical - seperate files, main calls
-
-# Instructions: 
-#   0. Put Mint transaction file in Mint folder
-#   1. Source everything in Code folder
-#   2. Update values in "Custom Functions"
-#   3. Jump into main, should be good to go
-
-#finalDf = main(10000, 0) %>% select(-contains("Contribution")
-#print (finalDf)
-

@@ -1,17 +1,7 @@
-getInvestments = function(categoryList, investment_Contribution_Roth, investment_Contribution_IRA)
+get_projected_income = function(net_income, base_salary)
 {
-  netIncome = getNetIncome(categoryList)
-  taxRatio = netIncome / (getStartingSalary() / 12)
-  grossIncome = netIncome * (1 + (1 - taxRatio))
-  
-  investmentTotal = (investment_Contribution_Roth * netIncome) + 
-    (investment_Contribution_IRA * grossIncome)
-}
-
-getProjectedIncome = function(netIncome, baseSalary)
-{
-  taxRatio = (netIncome / (getStartingSalary() / 12))
-  return ((baseSalary / 12) * taxRatio)
+  tax_ratio = (net_income / (base_salary / 12))
+  return ((net_income / 12) * tax_ratio)
 }
 
 getBonus_Taxes = function(categoryList, transactions, baseSalary)
@@ -24,6 +14,23 @@ getBonus_Taxes = function(categoryList, transactions, baseSalary)
               pull(Amount) / getStartingSalary()) * baseSalary)
   
   return (taxRefund + bonus)
+}
+
+get_manual_adjustments = function(category_df, transactions, config_file, years, zeroGrowth = FALSE)
+{
+  #additionalAdjustments = createStructureProjections(categoryList, transactions, years, zeroGrowth)
+  
+  manual_adj = lapply(config_file[["Manual_Adjustments"]], function(adj) {
+    
+    tibble(
+      "TimeAdj" = create_datetime(adj[['Year']], adj[['Month']]), 
+      "Var"=adj[['Var']], 
+      "Amt"= adj[["Amount"]], 
+      "Type"=adj[["Type"]])
+    
+  }) %>% bind_rows()
+  
+  #manual_adj %>% bind_rows(additionalAdjustments)
 }
 
 createStructureProjections = function(category_df, transactions, years, zeroGrowth, config_file)
@@ -50,47 +57,29 @@ createStructureProjections = function(category_df, transactions, years, zeroGrow
   categoryList=categoryList) %>% bind_rows()
 }
 
-get_account_balances = function(account_df, config_file, forecast_date_range)
+get_account_balances = function(account_df, config_file, forecast_time_series)
 {
-  total_df = account_df %>% group_by(Account_Class) %>% summarise(Sum = sum(Account_Balance))
+  total_df = account_df %>% group_by(accountType) %>% summarise(Sum = sum(value))
   
   #TODO figure out how to handle multiple loans
-  currentBalances = tibble("Timestamp" = forecast_date_range %>% first(),
-                           "Total_Savings" = total_df %>% dplyr::filter(Account_Class == "bank") %>% pull(Sum),
-                           "Investments" = total_df %>% dplyr::filter(Account_Class == "investment") %>% pull(Sum),
-                           "Public_Loans" = total_df %>% dplyr::filter(Account_Class == "loans") %>% pull(Sum),
+  currentBalances = tibble("Timestamp" = forecast_time_series %>% first(),
+                           "Total_Savings" = total_df %>% dplyr::filter(accountType == "bank") %>% pull(Sum),
+                           "Investments" = total_df %>% dplyr::filter(accountType == "investment") %>% pull(Sum),
+                           "Public_Loans" = total_df %>% dplyr::filter(accountType == "loan") %>% pull(Sum),
                            "BaseSalary" = get_base_salary(config_file))
 }
 
-get_account_changes = function(account_df, transactions, config_file, forecast_date_range, growth_rate = 0)
+get_fixed_payments = function(account_df, transactions, config_file, forecast_time_series, growth_rate = 0)
 {
   #TODO same as above, handle multiple loans
-  interest_rate = account_df %>% dplyr::filter(Account_Class == "loan" & Interest_Rate > 0) %>% pull(Interest_Rate)
+  interest_rate = account_df %>% dplyr::filter(accountType == "loan" & interestRate > 0) %>% pull(interestRate)
   loan_payment = transactions %>% dplyr::filter(str_detect(category, "loan")) %>% data.table::first() %>% pull(Amount)
   
-  loanStructure = tibble("Timestamp" = forecast_date_range %>% first(),
+  loanStructure = tibble("Timestamp" = forecast_time_series %>% first(),
                          "Public_Loan_Payment" = loan_payment,
                          "Public_Loan_Interest_Rate" = interest_rate,
                          
                          #Connect to fidelity api for this?
-                         "401k_Total_Investment" = get_401k_contribution_annual(config_file),
+                         "Annual_401k_Contribution" = get_401k_contribution_annual(config_file),
                          "Investment_Return_Rate" = growth_rate)
-}
-
-
-get_manual_adjustments = function(category_df, transactions, config_file, years, zeroGrowth = FALSE)
-{
-  #additionalAdjustments = createStructureProjections(categoryList, transactions, years, zeroGrowth)
-  
-  manual_adj = lapply(config_file[["Manual_Adjustments"]], function(adj) {
-    
-    tibble(
-      "TimeAdj" = create_datetime(adj[['Year']], adj[['Month']]), 
-      "Account_Id"=adj[['Account_Id']], 
-      "Amt"= adj[["Amount"]], 
-      "Type"=adj[["Type"]])
-    
-  }) %>% bind_rows()
-    
-    #manual_adj %>% bind_rows(additionalAdjustments)
 }
