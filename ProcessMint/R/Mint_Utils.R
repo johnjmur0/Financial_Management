@@ -111,10 +111,23 @@ get_monthly_summary = function(transactions)
 #' @export
 #'
 #' @examples
-monthly_category_sum = function(transactions, start_date, include_outlier = FALSE)
+monthly_category_sum = function(transactions, config_file, start_date, include_outlier = FALSE)
 {
+  transactions = transactions %>% 
+    mutate(Year = lubridate::year(Date),
+           Month = lubridate::month(Date),
+           Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-")))
+  
   if(!include_outlier) {
-    #reference config file for definition of outliers
+    
+      transactions = lapply(config_file[["Outlier_Months"]], function(outlier, transactions) {
+      
+      exclude_month = lubridate::ymd(str_c(outlier[["Year"]], outlier[["Month"]], 1, sep = "-"))
+      transactions %>% dplyr::filter(Year_Month != exclude_month)
+      
+      },transactions=transactions) %>% bind_rows() %>% distinct()
+      
+      #TODO handle outlier categories, plus category + amount combod
   }
   
   #Could I do this without saving data?
