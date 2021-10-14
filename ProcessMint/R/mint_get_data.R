@@ -24,6 +24,7 @@ get_mint_datasets = function(config_file)
     shell_cmd = str_c(shell_cmd, data_request[["Param"]], str_c("--filename=", data_request[["FileName"]]), sep = " ")
     print (str_c("Processing command", shell_cmd, sep = " "))
     
+    #TODO put a retry around this, it sometimes fails but works on 2nd try
     result = shell(shell_cmd)
     
     if (result != 0)

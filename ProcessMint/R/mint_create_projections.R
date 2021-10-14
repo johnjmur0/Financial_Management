@@ -2,7 +2,7 @@ get_projection_inputs = function(category_df, transactions, current_accounts, ac
 {
   avg_spend_monthly = get_avg_spend_monthly(category_df)
   
-  net_income = get_net_income(category_df, historical_start_date) %>% get_projected_income(current_accounts[["BaseSalary"]])
+  net_income = get_avg_income(category_df, historical_start_date) %>% get_projected_income(current_accounts[["BaseSalary"]])
   
   tibble("Timestamp" = forecast_time_series, 
          "NetIncome" = net_income, 
@@ -35,14 +35,17 @@ adjustTimeVariable = function(i, account_changes, projection_inputs)
   return (projection_inputs)
 }
 
-creat_projection_df = function(projection_inputs, account_adjustments, category_df, fixed_payments, min_savings_months)
+create_projection_df = function(projection_inputs, account_adjustments, category_df, min_savings_months)
 {
   for (i in 2:nrow(projection_inputs)) {
     
     print(i)
     
     projection_inputs[["BaseSalary"]][i] = projection_inputs[["BaseSalary"]][i - 1]
-    projection_inputs[["Investment_Contribution"]][i] = projection_inputs[["Investment_Contribution"]][i - 1]
+    projection_inputs[["Annual_401k_Contribution"]][i] = projection_inputs[["Annual_401k_Contribution"]][i - 1]
+    projection_inputs[["Investment_Return_Rate"]][i] = projection_inputs[["Investment_Return_Rate"]][i - 1]
+    projection_inputs[["Public_Loan_Payment"]][i] = projection_inputs[["Public_Loan_Payment"]][i - 1]
+    projection_inputs[["Public_Loan_Interest_Rate"]][i] = projection_inputs[["Public_Loan_Interest_Rate"]][i - 1]
     
     account_adjustments = account_adjustments %>% dplyr::filter(TimeAdj == projection_inputs[["Timestamp"]][i])
     
@@ -56,9 +59,8 @@ creat_projection_df = function(projection_inputs, account_adjustments, category_
     publicLoans_Payment = projection_inputs[["Public_Loan_Payment"]]
     
     investments = projection_inputs[["Investments"]]
-    investment_Contribution_Roth = projection_inputs[["Investment_Contribution_Roth"]]
-    investment_Contribution_IRA = projection_inputs[["Investment_Contribution_IRA"]]
     investment_Return_Rate = projection_inputs[["Investment_Return_Rate"]]
+    investmentContribution = projection_inputs[['Annual_401k_Contribution']] / 12
     
     netIncome = projection_inputs[["NetIncome"]]
     avgSpend = projection_inputs[["AvgSpend"]]
@@ -73,10 +75,10 @@ creat_projection_df = function(projection_inputs, account_adjustments, category_
       projection_inputs[["Public_Loans"]][i] = (publicLoans[i - 1] * publicLoans_Interest_Rate[i]) + publicLoans_Payment[i]
     }
     
-    projection_inputs[["NetIncome"]][i] = get_net_income(category_df) %>% 
-      get_projected_income(baseSalary[i - 1])
+    projection_inputs[["NetIncome"]][i] = get_avg_income(category_df) %>% get_projected_income(baseSalary[i - 1])
     
-    projection_inputs[["Total_Savings"]][i] = totalSavings[i-1] + projection_inputs[["NetIncome"]][i] + avgSpend[i] - (publicLoans_Payment[i])
+    projection_inputs[["Total_Savings"]][i] = totalSavings[i-1] + 
+      (projection_inputs[["NetIncome"]][i] + avgSpend[i] - (publicLoans_Payment[i]))
     
     requiredSavings = abs(avgSpend[i] * min_savings_months)
     loans = abs(projection_inputs[["Public_Loans"]][i])
@@ -84,8 +86,6 @@ creat_projection_df = function(projection_inputs, account_adjustments, category_
     additionalInvestment = if_else(projection_inputs[["Total_Savings"]][i] > (requiredSavings + loans),
                                    projection_inputs[["Total_Savings"]][i] - (requiredSavings + loans),
                                    0)
-    
-    investmentContribution = fixed_payments[['Annual_401k_Contribution']] / 12
     
     projection_inputs[["Investments"]][i] = (1 + investment_Return_Rate[i] / 12) *
       (investments[i - 1] + investmentContribution + additionalInvestment)

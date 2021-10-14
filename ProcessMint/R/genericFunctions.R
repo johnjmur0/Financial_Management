@@ -1,3 +1,5 @@
+#TODO put this into Utils package
+
 #' split dataframe row wise for iteration
 #'
 #' @param df data.frame or tibble

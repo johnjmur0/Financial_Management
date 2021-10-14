@@ -1,7 +1,7 @@
 get_projected_income = function(net_income, base_salary)
 {
   tax_ratio = (net_income / (base_salary / 12))
-  return ((net_income / 12) * tax_ratio)
+  return ((base_salary / 12) * tax_ratio)
 }
 
 getBonus_Taxes = function(categoryList, transactions, baseSalary)

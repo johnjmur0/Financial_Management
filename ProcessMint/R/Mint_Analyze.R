@@ -44,12 +44,12 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
   current_accounts = account_df %>% get_account_balances(config_file, forecast_time_series)
   
   projection_df = category_df %>% get_projection_inputs(transactions, 
-                                                        current_accounts, 
-                                                        fixed_payments, 
+                                                        current_accounts,
+                                                        fixed_payments,
                                                         forecast_time_series,
                                                         historical_start_date) %>%
     
-    creat_projection_df(manual_adjustments, category_df, fixed_payments, Configuration::get_min_savings_month(config_file))
+    create_projection_df(manual_adjustments, category_df, Configuration::get_min_savings_month(config_file))
   
   if (projection_df %>% select(Total_Loans) %>% colSums() == 0) {
     projection_df = projection_df %>% select(-contains("Loan"))

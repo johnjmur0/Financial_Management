@@ -12,7 +12,7 @@ monthly_category_sum(
 )
 }
 \arguments{
-\item{transactions}{todo}
+\item{transactions}{df of mint transactions}
 
 \item{start_date}{date to keep transactions}
 

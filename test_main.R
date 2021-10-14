@@ -1,3 +1,4 @@
+library(tidyverse)
 devtools::load_all("./Configuration")
 devtools::load_all("./ProcessMint")
 
