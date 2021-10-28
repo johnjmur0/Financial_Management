@@ -27,3 +27,6 @@ mint_get_projections(
 \description{
 Create financial projections based on past data and manual adjustments
 }
+\examples{
+mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
+}

@@ -7,7 +7,7 @@
 #' @return list
 #' @export
 #'
-#' @examples
+#' @examples df_to_list(df)
 df_to_list = function(df)
 {
   return(df %>% split(seq_len(nrow(.))))
@@ -21,7 +21,7 @@ df_to_list = function(df)
 #' @return lubridate datetime object
 #' @export
 #'
-#' @examples
+#' @examples create_datetime(year, month)
 create_datetime = function(year, month)
 {
   lubridate::ymd(paste(year, month, 1, sep = "-"))
@@ -37,7 +37,7 @@ create_datetime = function(year, month)
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples df_col_has_value(df, column, expected_type)
 df_col_has_value = function(df, column, expected_type)
 {
   if(is.null(df[[column]]) || length(df[[column]]) == 0  || is.na(df[[column]])) {

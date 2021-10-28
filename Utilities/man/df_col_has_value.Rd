@@ -19,3 +19,6 @@ df_col_has_value(df, column, expected_type)
 \description{
 check that dataframe column has data of specified type
 }
+\examples{
+df_col_has_value(df, column, expected_type)
+}

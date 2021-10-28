@@ -5,7 +5,7 @@
 #' @return dataframe
 #' @export
 #'
-#' @examples
+#' @examples get_monthly_summary(transactions)
 get_monthly_summary = function(transactions)
 {
   df_col_has_value(transactions, "date", "Date")
@@ -37,7 +37,7 @@ get_monthly_summary = function(transactions)
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples monthly_category_sum(transactions, config_file, start_date, include_outlier = FALSE)
 monthly_category_sum = function(transactions, config_file, start_date, include_outlier = FALSE)
 {
   transactions = transactions %>% 

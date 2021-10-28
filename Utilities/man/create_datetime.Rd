@@ -17,3 +17,6 @@ lubridate datetime object
 \description{
 create datetime from year month
 }
+\examples{
+create_datetime(year, month)
+}

@@ -15,3 +15,6 @@ dataframe
 \description{
 Year-Month total expenses, income, profit
 }
+\examples{
+get_monthly_summary(transactions)
+}

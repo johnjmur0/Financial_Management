@@ -17,7 +17,7 @@ mint_getHistoricalSummary = function(transactions, config_file, historical_start
 #' @return
 #' @export
 #'
-#' @examples
+#' @examples mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 {
   forecast_start = min(forecast_date_range)

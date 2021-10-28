@@ -15,3 +15,6 @@ list
 \description{
 split dataframe row wise for iteration
 }
+\examples{
+df_to_list(df)
+}

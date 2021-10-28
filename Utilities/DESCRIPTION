@@ -1,0 +1,10 @@
+Package: Utilities
+Title: Generic R Utilities
+Version: 0.1.0
+Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
+Description: Generic R Utilities
+Depends: R (>= 3.1.0)
+License: Internal
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1

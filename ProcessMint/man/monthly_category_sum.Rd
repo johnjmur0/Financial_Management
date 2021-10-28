@@ -24,3 +24,6 @@ monthly_category_sum(
 \description{
 get monthly sum of spending by category
 }
+\examples{
+monthly_category_sum(transactions, config_file, start_date, include_outlier = FALSE)
+}
