@@ -8,8 +8,8 @@
 #' @examples get_monthly_summary(transactions)
 get_monthly_summary = function(transactions)
 {
-  df_col_has_value(transactions, "date", "Date")
-  df_col_has_value(transactions, "amount", "numeric")
+  Utilities::df_col_has_value(transactions, "date", "Date")
+  Utilities::df_col_has_value(transactions, "amount", "numeric")
   
   transactions %>% arrange(date) %>% 
   
@@ -37,43 +37,46 @@ get_monthly_summary = function(transactions)
 #' @return
 #' @export
 #'
-#' @examples monthly_category_sum(transactions, config_file, start_date, include_outlier = FALSE)
+#' @examples
 monthly_category_sum = function(transactions, config_file, start_date, include_outlier = FALSE)
 {
-  transactions = transactions %>% 
-    mutate(Year_Month = lubridate::mdy(str_c(Month, 1, Year, sep = "-")))
+  Utilities::df_col_has_value(transactions, "Year", "numeric")
+  Utilities::df_col_has_value(transactions, "Month", "numeric")
+  Utilities::df_col_has_value(transactions, "category", "character")
+  Utilities::df_col_has_value(transactions, "transaction_type", "character")
   
+  transactions = transactions %>% 
+    mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-")))
+  
+  #TODO handle outlier categories, plus category + amount combo
   if(!include_outlier) {
     
       transactions = lapply(config_file[["Outlier_Months"]], function(outlier, transactions) {
       
       exclude_month = lubridate::ymd(str_c(outlier[["Year"]], outlier[["Month"]], 1, sep = "-"))
+      
       transactions %>% dplyr::filter(Year_Month != exclude_month)
       
       },transactions=transactions) %>% bind_rows() %>% distinct()
-      
-      #TODO handle outlier categories, plus category + amount combo
   }
   
-  #Could I do this without saving data?
-  categories = transactions %>% filter(Date > start_date) %>%
-    mutate(Type = if_else(Amount < 0, "Debit", "Credit"))
-  
-  credits = categories %>% filter(Type == "Credit") %>% 
-    group_by(Year, Month, category, Type) %>% summarise(Monthly_Total = sum(Amount))
-  
-  debits = categories %>% filter(Type == "Debit") %>% 
-    group_by(Year, Month, category, Type) %>% summarise(Monthly_Total = sum(Amount))
-  
-  categoryList = bind_rows(credits, debits) %>% 
-    na.omit() %>% filter(Monthly_Total != 0) %>% ungroup()
+  categories = transactions %>% filter(Date >= start_date) %>%
+    
+    group_by(Year, Month, category, transaction_type) %>% summarise(Monthly_Total = sum(Amount)) %>% 
+    
+    rename(Type = transaction_type) %>%  mutate(Type = if_else(Type == 'credit', 'Credit', 'Debit')) %>% 
+    
+    filter(Monthly_Total != 0) %>% ungroup()
 }
 
 
-get_avg_spend_monthly = function(category_df, transactions, return_df = FALSE, remove_income = TRUE, remove_loans = TRUE)
+get_avg_spend_monthly = function(category_df, 
+                                 transactions, 
+                                 return_df = FALSE, 
+                                 remove_income = TRUE, 
+                                 remove_loans = TRUE)
 {
   #TODO handle these categories in config
-  #hide includes lump student loan payments, mattress, air/credit card are vacations
   one_time_categories = c("air travel", "hide from budgets & trends", "credit card payment")
   #Music purchases, nonrepeatable only greater than 1k
   #largeOneTimeCategories = c("Entertainment", "Hobbies")
@@ -112,15 +115,16 @@ get_avg_income = function(category_df, start_date = NULL)
                        lubridate::ymd(str_c(min(category_df[["Year"]]), min(category_df[["Month"]]), 1, sep="/")),
                        start_date)
   
-  category_df %>% filter(Type == "Credit") %>%
+  category_df %>% dplyr::filter(Type == "Credit") %>%
     
+    mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "/"))) %>% 
+    
+    #TODO handle this in config better
     #Extra income, don't count in average
     dplyr::filter(!str_detect(category, "Tax") | !(category == "Income" & Monthly_Total > 1000)) %>% 
     
-    dplyr::filter(Year >= lubridate::year(start_date) & Month >= lubridate::month(start_date) & 
-                    Year <= lubridate::year(Sys.time()) &
-                    #current month almost always incomplete
-                    !(Year == lubridate::year(Sys.time()) & Month == lubridate::month(Sys.time()))) %>% 
+    #Current month almost always incomplete, can distort average
+    dplyr::filter(between(Year_Month, start_date, Sys.time())) %>% 
     
     group_by(Year, Month) %>% summarise(meanIncome = sum(Monthly_Total)) %>% ungroup() %>% 
     

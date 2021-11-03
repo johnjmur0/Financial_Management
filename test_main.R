@@ -1,6 +1,7 @@
 library(tidyverse)
 devtools::load_all("./Configuration")
 devtools::load_all("./ProcessMint")
+devtools::load_all("./Utilities")
 
 test_main = function(user_name = "jjm")
 {

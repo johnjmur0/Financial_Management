@@ -29,11 +29,7 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
   transactions = transactions %>% get_monthly_summary()
   category_df = transactions %>% monthly_category_sum(config_file, historical_start_date)
   
-  manual_adjustments = category_df %>% get_manual_adjustments(transactions, 
-                                                              config_file, 
-                                                              years, 
-                                                              zeroGrowth = FALSE) %>% 
-    
+  manual_adjustments = get_manual_adjustments(config_file) %>% 
     dplyr::filter(between(TimeAdj, forecast_start, forecast_end))
   
   fixed_payments = account_df %>% get_fixed_payments(transactions, 

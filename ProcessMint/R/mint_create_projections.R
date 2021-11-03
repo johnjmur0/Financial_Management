@@ -2,7 +2,7 @@ get_projection_inputs = function(category_df, transactions, current_accounts, ac
 {
   avg_spend_monthly = get_avg_spend_monthly(category_df)
   
-  net_income = get_avg_income(category_df, historical_start_date) %>% get_projected_income(current_accounts[["BaseSalary"]])
+  net_income = get_avg_income(category_df, historical_start_date)
   
   tibble("Timestamp" = forecast_time_series, 
          "NetIncome" = net_income, 
