@@ -86,7 +86,6 @@ testthat::test_that("Test Get Monthly Spend", {
 })
 
 #TODO add get_avg_spend_monthly with return_df
-
 testthat::test_that("Test Get Monthly Income", {
   
   test_category_df = get_test_category_df()

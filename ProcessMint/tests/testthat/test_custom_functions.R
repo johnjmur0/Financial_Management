@@ -3,8 +3,10 @@ testthat::context('test custom/config related functions')
 testthat::test_that('test get_manual_adjustments', {
 
   test_config = c()
-  test_config[["Manual_Adjustments"]] = list(list("Month" = 4, "Year" = 2019,
-                                                  'Var' = 'Investments','Type' ='Credit',
+  test_config[["Manual_Adjustments"]] = list(list('Month' = 4, 
+                                                  'Year' = 2019,
+                                                  'Var' = 'Investments',
+                                                  'Type' ='Credit',
                                                   'Amount' = 1000))
 
   adjustments = ProcessMint::get_manual_adjustments(test_config)

@@ -48,7 +48,7 @@ get_fixed_payments = function(account_df, transactions, config_file, forecast_ti
 }
 
 #TODO not sure what I want to do with this yet
-createStructureProjections = function(category_df, transactions, years, zeroGrowth, config_file)
+create_structure_projections = function(category_df, transactions, years, zeroGrowth, config_file)
 {
   base_salary = get_base_salary(config_file)
   fiscal_month_start = get_fiscal_year_start(config_file)
@@ -60,8 +60,8 @@ createStructureProjections = function(category_df, transactions, years, zeroGrow
     bonus = categoryList %>% getBonus_Taxes(transactions, (baseSalary))
     raise = if_else(year > min_year, raise, 0)
 
-    list(tibble("TimeAdj" = createDateTime(year, fiscal_month_start), "Var" = "BaseSalary", "Amt" = raise, "Type"="Credit"),
-         tibble("TimeAdj" = createDateTime(year, fiscal_month_start + 1), "Var" = "Total_Savings", "Amt" = bonus, "Type" = "Credit")) %>% 
+    list(tibble("TimeAdj" = create_dateTime(year, fiscal_month_start), "Var" = "BaseSalary", "Amt" = raise, "Type"="Credit"),
+         tibble("TimeAdj" = create_dateTime(year, fiscal_month_start + 1), "Var" = "Total_Savings", "Amt" = bonus, "Type" = "Credit")) %>% 
       
       bind_rows() %>% dplyr::filter(Amt != 0)
     

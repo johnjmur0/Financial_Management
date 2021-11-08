@@ -1,4 +1,4 @@
-mint_getHistoricalSummary = function(transactions, config_file, historical_start_date)
+mint_get_historical_summary = function(transactions, config_file, historical_start_date)
 {
   transactions = transactions %>% get_monthly_summary() %>% 
     
@@ -20,17 +20,13 @@ mint_getHistoricalSummary = function(transactions, config_file, historical_start
 #' @examples mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 {
-  forecast_start = min(forecast_date_range)
-  forecast_end = max(forecast_date_range)
-  
-  years = seq(lubridate::year(forecast_start), lubridate::year(forecast_end))
-  forecast_time_series = seq(forecast_start, forecast_end, by = "month")
+  forecast_time_series = seq(min(forecast_date_range), max(forecast_date_range), by = "month")
   
   transactions = transactions %>% get_monthly_summary()
   category_df = transactions %>% monthly_category_sum(config_file, historical_start_date)
   
   manual_adjustments = get_manual_adjustments(config_file) %>% 
-    dplyr::filter(between(TimeAdj, forecast_start, forecast_end))
+    dplyr::filter(between(TimeAdj, min(forecast_date_range), max(forecast_date_range)))
   
   fixed_payments = account_df %>% get_fixed_payments(transactions, 
                                                      config_file, 
@@ -39,14 +35,16 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
   
   current_accounts = account_df %>% get_account_balances(config_file, forecast_time_series)
   
-  projection_df = category_df %>% get_projection_inputs(transactions, 
-                                                        current_accounts,
-                                                        fixed_payments,
-                                                        forecast_time_series,
-                                                        historical_start_date) %>%
-    
-    create_projection_df(manual_adjustments, category_df, Configuration::get_min_savings_month(config_file))
+  projection_inputs = category_df %>% get_projection_inputs(transactions, 
+                                                            current_accounts,
+                                                            fixed_payments,
+                                                            forecast_time_series,
+                                                            historical_start_date)
   
+  projection_df = projection_inputs %>% create_projection_df(manual_adjustments, 
+                                                             category_df, 
+                                                             Configuration::get_min_savings_month(config_file))
+  #TODO deal with this better
   if (projection_df %>% select(Total_Loans) %>% colSums() == 0) {
     projection_df = projection_df %>% select(-contains("Loan"))
   }
