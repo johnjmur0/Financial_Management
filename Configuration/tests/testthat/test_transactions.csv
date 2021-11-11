@@ -1,0 +1,51 @@
+date,description,original_description,amount,transaction_type,category,account_name,labels,notes
+2021-10-17,Andala Coffee House,ANDALA COFFEE HOUSE,9.31,debit,coffee shops,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-17,TST*OLE,TST*OLE,3.75,debit,coffee shops,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-17,TST*OLE,TST*OLE,12.31,debit,restaurants,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-17,Hulu,HLU*Hulu 1345156614388-U,6.99,debit,bills & utilities,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-17,1369 Coffeehouse,SQ *1369 COFFEEHOUSE,7.22,debit,coffee shops,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-15,OTTO PIZZA BROOKLINE MA,OTTO PIZZA               BROOKLINE    MA,44.11,debit,restaurants,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-15,PAYMENT - THANK YOU,PAYMENT - THANK YOU,632.46,credit,credit card payment,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-15,Automatic Transfer from CHK 1163 Confirmation# 1589820330,Automatic Transfer from CHK 1163                            Confirmation# 1589820330,25,credit,transfer,Regular Savings - 0277,NA,NA
+2021-10-15,Automatic Transfer to SAV 0277 Confirmation# 1589820330,Automatic Transfer to SAV 0277                              Confirmation# 1589820330,25,debit,transfer,Adv Plus Banking - 1163,NA,NA
+2021-10-15,Bank of America Credit Card Bill Payment,Bank of America Credit Card Bill Payment,632.46,debit,credit card payment,Adv Plus Banking - 1163,NA,NA
+2021-10-15,"EDISON ENERGY LL DES:DIRECT DEP ID:XXXXX8952903A8H INDN:MURPHY,JOHN J CO ID: PPD","EDISON ENERGY LL DES:DIRECT DEP ID:XXXXX8952903A8H           INDN:MURPHY,JOHN J           CO ID:XXXXX11101 PPD",2932.34,credit,paycheck,Adv Plus Banking - 1163,NA,NA
+2021-10-14,LinkedIn,LinkedIn 6208470826      855-6535653  CA,31.86,debit,business services,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-14,CLOVER FOOD LAB Boston MA,SQ *CLOVER FOOD LAB      Boston       MA,15.34,debit,fast food,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-14,Walgreens,WALGREENS #15390         BOSTON       MA,2.49,debit,groceries,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-14,Venmo,VENMO            DES:PAYMENT    ID:XXXXX38790728             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,8,debit,restaurants,Adv Plus Banking - 1163,NA,NA
+2021-10-14,Media Works Inc,"CHECKCARD  1013 FIRST LOOK MEDIA WORKS,                     202-930-8242 NY 24492151286713409692125 RECURRING",10,debit,charity,Adv Plus Banking - 1163,NA,NA
+2021-10-13,Comcast,COMCAST CABLE COMM       800-COMCAST  NH,59.99,debit,bills & utilities,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-12,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX98003283             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,100,credit,transfer,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX98003283             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,17,credit,rental car & taxi,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX98003283             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,55,credit,restaurants,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo,VENMO            DES:PAYMENT    ID:XXXXX88661323             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,100,debit,transfer,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo,VENMO            DES:PAYMENT    ID:XXXXX75213365             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,20,debit,restaurants,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo,VENMO            DES:PAYMENT    ID:XXXXX75212681             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,50,debit,gift,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo,VENMO            DES:PAYMENT    ID:XXXXX15465376             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,99,debit,groceries,Adv Plus Banking - 1163,NA,NA
+2021-10-12,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX88658740             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,91,credit,restaurants,Adv Plus Banking - 1163,NA,NA
+2021-10-12,A MEDIUM CORPORATION 415-508-5008 CA,A MEDIUM CORPORATION     415-508-5008 CA,5,debit,business services,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-12,Lyft,LYFT   2 RIDES 10-10     8558659553   CA,31.98,debit,rental car & taxi,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-11,TST* DRIFTERS TALE CAMBRIDGE MA,TST* DRIFTERS TALE       CAMBRIDGE    MA,232.6,debit,restaurants,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-09,Uber.com,UBER   TRIP              HELP.UBER.COMCA,8.51,debit,rental car & taxi,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-08,Chipotle,CHIPOTLE 1892            CAMBRIDGE    MA,12.25,debit,restaurants,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-06,Venmo,VENMO            DES:PAYMENT    ID:XXXXX07897014             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,190,debit,health & fitness,Adv Plus Banking - 1163,NA,NA
+2021-10-06,Dana Hill Liquor Mart,LS DANA HILL LIQUORS     617-5476199  MA,28.38,debit,alcohol & bars,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,BKOFAMERICA MOBILE 10/03 3888834803 DEPOSIT *MOBILE MA,BKOFAMERICA MOBILE 10/03 3888834803 DEPOSIT                                    *MOBILE       MA,1002,credit,mortgage & rent,Regular Savings - 0277,NA,NA
+2021-10-04,Spotify,SPOTIFY                  877-778-1161 NY,12.99,debit,music,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,Whole Foods,WHOLEFDS SMV #10511      SOMERVILLE   MA,139.47,debit,groceries,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,Whole Foods,WHOLEFDS SMV #10511      SOMERVILLE   MA,12.39,debit,groceries,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,TST* HARRY'S BAR & GRILL BRIGHTON MA,TST* HARRY'S BAR & GRILL BRIGHTON     MA,25.93,debit,alcohol & bars,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,Uber.com,UBER   TRIP              HELP.UBER.COMCA,13.28,debit,rental car & taxi,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-04,Venmo,VENMO            DES:PAYMENT    ID:XXXXX66934674             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,27,debit,restaurants,Adv Plus Banking - 1163,NA,NA
+2021-10-04,Bank of America Credit Card Bill Payment,Bank of America Credit Card Bill Payment,473,debit,credit card payment,Adv Plus Banking - 1163,NA,NA
+2021-10-04,Zelle Transfer Conf# t2b8fgqb1; ABEL DESIGNS LLC,Zelle Transfer Conf# t2b8fgqb1;                             ABEL DESIGNS LLC,1,debit,mortgage & rent,Adv Plus Banking - 1163,NA,NA
+2021-10-04,Venmo,VENMO            DES:PAYMENT    ID:XXXXX56540472             INDN:JOHN MURPHY             CO ID:XXXXX81992 WEB,15,debit,alcohol & bars,Adv Plus Banking - 1163,NA,NA
+2021-10-04,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX71897074             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,50,credit,groceries,Adv Plus Banking - 1163,NA,NA
+2021-10-04,Zelle Transfer Conf# o3k8iopm2; ABEL DESIGNS LLC,Zelle Transfer Conf# o3k8iopm2;                             ABEL DESIGNS LLC,2699,debit,mortgage & rent,Adv Plus Banking - 1163,NA,NA
+2021-10-02,PAYMENT - THANK YOU,PAYMENT - THANK YOU,473,credit,credit card payment,Bank of America Travel Rewards Visa Signature,NA,NA
+2021-10-01,Venmo Des Cashout,VENMO            DES:CASHOUT    ID:XXXXX93941886             INDN:JOHN MURPHY             CO ID:XXXXX81992 PPD,53.87,credit,bills & utilities,Adv Plus Banking - 1163,NA,NA
+2021-10-01,"EDISON ENERGY LL DES:DIRECT DEP ID:XXXXX9942426A8H INDN:MURPHY,JOHN J CO ID: PPD","EDISON ENERGY LL DES:DIRECT DEP ID:XXXXX9942426A8H           INDN:MURPHY,JOHN J           CO ID:XXXXX11101 PPD",2932.34,credit,paycheck,Adv Plus Banking - 1163,NA,NA
+2021-10-01,EVERSOURCE,EVERSOURCE       DES:WEB_PAY    ID:XXXXX858092921            INDN:JOHN MURPHY             CO ID:XXXXX42013 WEB,24.74,debit,utilities,Adv Plus Banking - 1163,NA,NA
+2021-10-01,FID BKG SVC LLC,FID BKG SVC LLC  DES:MONEYLINE  ID:XXXXX24351K5XNF           INDN:JOHN J MURPHY           CO ID:XXXXX04600 PPD,500,debit,transfer,Adv Plus Banking - 1163,NA,NA
+2021-10-01,EVERSOURCE,EVERSOURCE       DES:WEB_PAY    ID:XXXXX841092921            INDN:JOHN MURPHY             CO ID:XXXXX42013 WEB,83,debit,utilities,Adv Plus Banking - 1163,NA,NA

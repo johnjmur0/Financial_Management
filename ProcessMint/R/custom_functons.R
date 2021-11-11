@@ -29,7 +29,7 @@ get_account_balances = function(account_df, config_file, forecast_time_series)
                            "Total_Savings" = total_df %>% dplyr::filter(accountType == "bank") %>% pull(Sum),
                            "Investments" = total_df %>% dplyr::filter(accountType == "investment") %>% pull(Sum),
                            "Public_Loans" = total_df %>% dplyr::filter(accountType == "loan") %>% pull(Sum),
-                           "BaseSalary" = Configuration::get_base_salary(config_file))
+                           "BaseSalary" = Configuration::get_numeric_val_from_config(config_file, 'Base_Salary'))
 }
 
 get_fixed_payments = function(account_df, transactions, config_file, forecast_time_series, growth_rate = 0)
@@ -43,16 +43,21 @@ get_fixed_payments = function(account_df, transactions, config_file, forecast_ti
                          "Public_Loan_Interest_Rate" = interest_rate,
                          
                          #Connect to fidelity api for this?
-                         "Annual_401k_Contribution" = get_401k_contribution_annual(config_file),
+                         "Annual_401k_Contribution" = Configuration::get_numeric_val_from_config(config_file, 'Annual_401k_Contribution'),
                          "Investment_Return_Rate" = growth_rate)
 }
 
 #TODO not sure what I want to do with this yet
 create_structure_projections = function(category_df, transactions, years, zeroGrowth, config_file)
 {
-  base_salary = get_base_salary(config_file)
+  base_salary = Configuration::get_numeric_val_from_config(config_file, 'Base_Salary')
+  
+  #This says month but config has year?
+  #Fiscal_Year_Start
   fiscal_month_start = get_fiscal_year_start(config_file)
   
+  #avg raise = 2 config values - rename to avg_raise_percentage
+  #config_file[["Average_Raise"]] * config_file[["Base_Salary"]]
   raise = if_else(!zeroGrowth, get_average_raise(config_file), 0)
 
   lapply(years, function(year, min_year, raise, base_salary, transactions, category_df) {
@@ -72,6 +77,7 @@ create_structure_projections = function(category_df, transactions, years, zeroGr
   categoryList=categoryList) %>% bind_rows()
 }
 
+#Need config_file passed into here for salary function
 getBonus_Taxes = function(category_df, transactions, base_salary)
 {
   taxRefund = category_df %>% dplyr::filter(Category == "Federal Tax" | Category == "State Tax") %>% 
@@ -80,7 +86,7 @@ getBonus_Taxes = function(category_df, transactions, base_salary)
   #TODO make bonus percentage an input
   historical_bonus = transactions %>% dplyr::filter(Category == "Bonus") %>% pull(Amount)
   
-  future_bonus = (historical_bonus / Configuration::get_base_salary()) * base_salary
+  future_bonus = (historical_bonus / Configuration::get_numeric_val_from_config()) * base_salary
   
   return (taxRefund + bonus)
 }

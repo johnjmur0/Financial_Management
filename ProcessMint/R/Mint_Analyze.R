@@ -28,10 +28,13 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
   manual_adjustments = get_manual_adjustments(config_file) %>% 
     dplyr::filter(between(TimeAdj, min(forecast_date_range), max(forecast_date_range)))
   
+  #TODO can also base this off historical
+  annual_investment_growth = Configuration::get_numeric_val_from_config(config_file, 'Average_Investment_Growth')
+  
   fixed_payments = account_df %>% get_fixed_payments(transactions, 
                                                      config_file, 
                                                      forecast_time_series, 
-                                                     Configuration::get_investment_growth(config_file))
+                                                     annual_investment_growth)
   
   current_accounts = account_df %>% get_account_balances(config_file, forecast_time_series)
   
@@ -41,9 +44,11 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
                                                             forecast_time_series,
                                                             historical_start_date)
   
+  min_monthly_savings = Configuration::get_numeric_val_from_config(config_file, 'Minimum_Monthly_Savings')
+  
   projection_df = projection_inputs %>% create_projection_df(manual_adjustments, 
                                                              category_df, 
-                                                             Configuration::get_min_savings_month(config_file))
+                                                             min_monthly_savings)
   #TODO deal with this better
   if (projection_df %>% select(Total_Loans) %>% colSums() == 0) {
     projection_df = projection_df %>% select(-contains("Loan"))
