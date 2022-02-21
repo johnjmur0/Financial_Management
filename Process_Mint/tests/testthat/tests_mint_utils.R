@@ -26,7 +26,7 @@ testthat::test_that("Test summarize monthly transactions", {
   
   test_transactions = get_test_transactions()
   
-  result = ProcessMint::get_monthly_summary(test_transactions)
+  result = Process_Mint::get_monthly_summary(test_transactions)
   testthat::expect_equal(4, nrow(result))
   #These columns are sufficient conditions that the rest of columns are correct
   testthat::expect_true(all(c("Year", "Month", "Profit_Total_Monthly") %in% colnames(result)))
@@ -48,7 +48,7 @@ testthat::test_that("Test summarize transactions by category", {
                                    Month = lubridate::month(Date),
                                    Amount = if_else(transaction_type == "debit", amount * -1, amount))
   
-  result = ProcessMint::monthly_category_sum(test_transactions, 
+  result = Process_Mint::monthly_category_sum(test_transactions, 
                                              test_config, 
                                              min(test_transactions[["Date"]]),
                                              include_outlier = FALSE)
@@ -76,7 +76,7 @@ testthat::test_that("Test Get Monthly Spend", {
   test_category_df = get_test_category_df()
   test_transactions = get_test_transactions()
   
-  avg_spend_df = ProcessMint::get_avg_spend_monthly(test_category_df, 
+  avg_spend_df = Process_Mint::get_avg_spend_monthly(test_category_df, 
                                                     test_transactions, 
                                                     return_df = FALSE, 
                                                     remove_income = TRUE, 
@@ -90,8 +90,7 @@ testthat::test_that("Test Get Monthly Income", {
   
   test_category_df = get_test_category_df()
   
-  avg_spend_df = ProcessMint::get_avg_income(test_category_df)
+  avg_spend_df = Process_Mint::get_avg_income(test_category_df)
   
   testthat::expect_equal(20, avg_spend_df)
 })
-

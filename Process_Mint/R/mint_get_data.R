@@ -4,15 +4,15 @@
 get_mint_datasets = function(config_file)
 {
   #TODO Have program manage this
-  api_filePath = "C:/source/mintapi/mintapi/api.py"
+  api_filepath = "C:/source/mintapi/mintapi/api.py"
   login_params = "--keyring --headless --session-path=None"
   mfa_params = str_c("--mfa-method=soft-token --mfa-token=", config_file[["MFA_Token"]])
   login_email = config_file[["Login_Email"]]
   
-  date = format(as.Date(Sys.time(), tz = Sys.timezone()), format="%m-%d-%Y")
+  date = format(as.Date(Sys.time(), tz = Sys.timezone()), format = "%m-%d-%Y")
   #Delete files once they're read
   dir = "C:/temp"
-  data_filePaths = tibble("Param" = c("--accounts", "--investments", "--transactions"),
+  data_filepaths = tibble("Param" = c("--accounts", "--investments", "--transactions"),
                           "FileName" = c(file.path(dir, str_c("accounts_", date, ".json")), 
                                          file.path(dir, str_c("investments_", date, ".json")), 
                                          file.path(dir, str_c("transactions_", date, ".csv"))))
@@ -22,7 +22,7 @@ get_mint_datasets = function(config_file)
   ret_data = lapply(data_filePaths %>% df_to_list(), function(data_request, shell_cmd) {
     
     shell_cmd = str_c(shell_cmd, data_request[["Param"]], str_c("--filename=", data_request[["FileName"]]), sep = " ")
-    print (str_c("Processing command", shell_cmd, sep = " "))
+    print(str_c("Processing command", shell_cmd, sep = " "))
     
     #TODO put a retry around this, it sometimes fails but works on 2nd try
     result = shell(shell_cmd)

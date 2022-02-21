@@ -32,20 +32,26 @@ mint = mintapi.Mint(
     use_chromedriver_on_path=False
 )
 
-accounts = mint.get_accounts(True)
-investments = mint.get_invests_json()
-transactions = mint.get_transactions()
+def get_account_df():
+    accounts = mint.get_accounts(True)    
+
+    account_df = pd.DataFrame()
+
+    for account in accounts:
+        account_df = pd.concat([account_df, pd.DataFrame.from_dict(account, orient = "index").T])
+
+    return account_df
+
+def get_transactions():
+    transactions = mint.get_transactions()
+
+    return transactions
+
+def get_investments():
+
+    investments = mint.get_invests_json()
+
+    investment_obj = json.loads(investments)
+    return pd.DataFrame.from_dict(investment_obj)
 
 mint.close()
-
-account_df = pd.DataFrame()
-
-for account in accounts:
-    account_df = pd.concat([account_df, pd.DataFrame.from_dict(account, orient = "index").T])
-
-account_df.to_csv("C:/Users/JackMurphy/Downloads/Mint/accounts_10-03-2021.csv")
-
-transactions.to_csv("C:/Users/JackMurphy/Downloads/Mint/transactions_10-03-2021.csv")
-
-investment_obj = json.loads(investments)
-pd.DataFrame.from_dict(investment_obj).to_csv("C:/Users/JackMurphy/Downloads/Mint/investments_10-03-2021.csv")

@@ -4,6 +4,8 @@ chromedriver.exe
 Config_Files/
 *.Rproj*
 
+renv/library/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
