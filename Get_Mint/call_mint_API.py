@@ -42,16 +42,20 @@ def get_account_df():
 
     return account_df
 
-def get_transactions():
+def get_transactions_df():
     transactions = mint.get_transactions()
 
     return transactions
 
-def get_investments():
+def get_investments_df():
 
     investments = mint.get_invests_json()
 
-    investment_obj = json.loads(investments)
+    investment_obj = json.loads(investments) 
     return pd.DataFrame.from_dict(investment_obj)
 
 mint.close()
+
+account_df = get_account_df()
+transactions_df = get_transactions_df()
+investments_df = get_investments_df()
