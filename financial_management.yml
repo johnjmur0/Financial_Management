@@ -1,0 +1,11 @@
+name: financial_management
+channels:
+  - defaults
+dependencies:
+  - python
+  - pandas
+  - json
+  - radian
+  - pip
+  - pip:
+    - mintapi
