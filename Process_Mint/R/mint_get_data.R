@@ -17,9 +17,9 @@ get_mint_datasets = function(config_file)
                                          file.path(dir, str_c("investments_", date, ".json")), 
                                          file.path(dir, str_c("transactions_", date, ".csv"))))
   
-  shell_cmd = str_c("python", api_filePath, login_params, mfa_params, login_email, sep = " ")
+  shell_cmd = str_c("python", api_filepath, login_params, mfa_params, login_email, sep = " ")
   
-  ret_data = lapply(data_filePaths %>% df_to_list(), function(data_request, shell_cmd) {
+  ret_data = lapply(data_filepaths %>% df_to_list(), function(data_request, shell_cmd) {
     
     shell_cmd = str_c(shell_cmd, data_request[["Param"]], str_c("--filename=", data_request[["FileName"]]), sep = " ")
     print(str_c("Processing command", shell_cmd, sep = " "))
@@ -27,8 +27,7 @@ get_mint_datasets = function(config_file)
     #TODO put a retry around this, it sometimes fails but works on 2nd try
     result = shell(shell_cmd)
     
-    if (result != 0)
-    {
+    if (result != 0) {
       stop(str_c("Getting", data_request[["Param"]], "from mint api failed. Not sure how to get error message yet"))
     }
     
@@ -42,7 +41,7 @@ get_mint_datasets = function(config_file)
       stop(str_c("file format not expected"), data_request[['FileName']], sep = " ")
     }
   },
-  shell_cmd=shell_cmd)
+  shell_cmd = shell_cmd)
   
   return (ret_data)
 }
