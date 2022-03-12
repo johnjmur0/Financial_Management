@@ -1,6 +1,5 @@
-#context('test custom/config related functions')
+context('test custom/config related functions')
 
-library(stringr)
 test_that('get_config_field_generic valid', {
   
   test_config = c()

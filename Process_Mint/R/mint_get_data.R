@@ -1,8 +1,8 @@
 #Example command that worked for reference
 #"python C:/source/mintapi/mintapi/api.py --keyring --headless --session-path=None --mfa-method=soft-token --mfa-token=Q5ISNFBVWXM5FEJ5KKUI2WUXRSHZT5PS  johnjmur0@gmail.com --accounts --filename=C:/Users/JackMurphy/Downloads/Mint/accounts_10-03-2021_2.json"
 
-get_mint_datasets = function(config_file)
-{
+get_mint_datasets = function(config_file) {
+  
   #TODO Have program manage this
   api_filepath = "C:/source/mintapi/mintapi/api.py"
   login_params = "--keyring --headless --session-path=None"

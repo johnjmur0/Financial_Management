@@ -1,3 +1,4 @@
+from unicodedata import name
 import pandas as pd
 import mintapi
 import json
@@ -9,7 +10,7 @@ def get_mint_conn():
         "johnjmur0@gmail.com",
         "w3Sa40pT$6XV",
         mfa_method='soft-token',
-        mfa_token ='E6LDN5UVDKBQFODPBOTACIGHTMPGA6BH',
+        mfa_token ='2CTZUMN37ICTGJY3MAFXL5UZ3UB7HSKP',
         headless=True)
 
 def close_mint_conn(mint_conn):
@@ -17,9 +18,7 @@ def close_mint_conn(mint_conn):
 
 def get_account_df(mint_conn):
     
-    #mint = get_mint_conn()
-    accounts = mint_conn.get_accounts(True)    
-    #mint.close()
+    accounts = mint_conn.get_accounts()
 
     account_df = pd.DataFrame()
 
@@ -31,16 +30,16 @@ def get_account_df(mint_conn):
 
 def get_transactions_df(mint_conn):
     
-    #mint = get_mint_conn()
     transactions = mint_conn.get_transactions()
-    #mint.close()
     return transactions
 
 def get_investments_df(mint_conn):
     
-    #mint = get_mint_conn()
     investments = mint_conn.get_invests_json()
-    mint.close()
 
     investment_obj = json.loads(investments) 
     return pd.DataFrame.from_dict(investment_obj)
+
+if __name__ == '__main__':
+    mint_conn = get_mint_conn()
+    get_account_df(mint_conn)

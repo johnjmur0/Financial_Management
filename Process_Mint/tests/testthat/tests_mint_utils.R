@@ -1,9 +1,6 @@
 testthat::context("Test Mint Utils")
 
-library(lubridate)
-
-get_test_transactions = function()
-{
+get_test_transactions = function() {
   tibble("date" = c("1/1/2019", "2/1/2019", "3/1/2019", "4/1/2019"), 
          "category" = c("foo", "bar", "foo", "bar"),
          "amount" = c(10, 20, 30, 40),
@@ -12,8 +9,7 @@ get_test_transactions = function()
     mutate(date = lubridate::mdy(date))
 }
 
-get_test_category_df = function()
-{
+get_test_category_df = function() {
   tibble("Year" = c(2019, 2019, 2019, 2019),
          "Month" = c(1, 2, 3, 4),
          "category" = c("foo", "bar", "foo", "bar"),
@@ -44,9 +40,11 @@ testthat::test_that("Test summarize transactions by category", {
   test_config[["Outlier_Months"]] = list(list("Month" = 4, "Year" = 2019))
   
   test_transactions = get_test_transactions() %>% 
-    rename(Date = date) %>% mutate(Year = lubridate::year(Date),
-                                   Month = lubridate::month(Date),
-                                   Amount = if_else(transaction_type == "debit", amount * -1, amount))
+    rename(Date = date) %>% 
+    
+    mutate(Year = lubridate::year(Date),
+           Month = lubridate::month(Date),
+           Amount = if_else(transaction_type == "debit", amount * -1, amount))
   
   result = Process_Mint::monthly_category_sum(test_transactions, 
                                              test_config, 
