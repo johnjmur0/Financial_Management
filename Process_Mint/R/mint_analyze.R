@@ -1,6 +1,6 @@
 mint_get_historical_summary = function(transactions, config_file, historical_start_date)
 {
-  transactions = transactions %>% get_monthly_summary() %>% 
+  transactions = transactions %>% get_monthly_summary()
     
   category_df = transactions %>% monthly_category_sum(historical_start_date, include_outlier = TRUE)
   
@@ -54,5 +54,5 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
     projection_df = projection_df %>% select(-contains("Loan"))
   }
   
-  return (projection_df)
+  return(projection_df)
 }

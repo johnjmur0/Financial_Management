@@ -43,5 +43,5 @@ get_mint_datasets = function(config_file)
   },
   shell_cmd = shell_cmd)
   
-  return (ret_data)
+  return(ret_data)
 }

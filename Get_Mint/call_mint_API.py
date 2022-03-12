@@ -10,14 +10,16 @@ def get_mint_conn():
         "w3Sa40pT$6XV",
         mfa_method='soft-token',
         mfa_token ='E6LDN5UVDKBQFODPBOTACIGHTMPGA6BH',
-        headless=True
-    )
+        headless=True)
 
-def get_account_df():
+def close_mint_conn(mint_conn):
+    mint_conn.close()
+
+def get_account_df(mint_conn):
     
-    mint = get_mint_conn()
-    accounts = mint.get_accounts(True)    
-    mint.close()
+    #mint = get_mint_conn()
+    accounts = mint_conn.get_accounts(True)    
+    #mint.close()
 
     account_df = pd.DataFrame()
 
@@ -27,17 +29,17 @@ def get_account_df():
     account_df = account_df[['accountName', 'accountType', 'accountSystemStatus', 'value', 'interestRate']].reset_index(drop=True)
     return account_df
 
-def get_transactions_df():
+def get_transactions_df(mint_conn):
     
-    mint = get_mint_conn()
-    transactions = mint.get_transactions()
-    mint.close()
+    #mint = get_mint_conn()
+    transactions = mint_conn.get_transactions()
+    #mint.close()
     return transactions
 
-def get_investments_df():
+def get_investments_df(mint_conn):
     
-    mint = get_mint_conn()
-    investments = mint.get_invests_json()
+    #mint = get_mint_conn()
+    investments = mint_conn.get_invests_json()
     mint.close()
 
     investment_obj = json.loads(investments) 

@@ -24,7 +24,7 @@ testthat::test_that('test get_account_balances', {
   test_config = c()
   test_config[["Base_Salary"]] = 1000000
   test_series = seq(lubridate::ymd(str_c(2022, 1, 1, sep = "/")), 
-                    lubridate::ymd(str_c(2022, 2, 1, sep = "/")), by='month')
+                    lubridate::ymd(str_c(2022, 2, 1, sep = "/")), by = 'month')
   
   Process_Mint::get_account_df()
   
