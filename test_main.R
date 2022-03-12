@@ -1,9 +1,15 @@
 library(tidyverse)
+library(plumber)
 devtools::load_all('./Configuration')
 devtools::load_all('./Process_Mint')
 devtools::load_all('./Utilities')
 
-test_main = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
+#* get historical transactions aggregated 
+#* @param user_name key for config file to use
+#* @param read_cache whether to read transactions from cache if possible
+#* @param write_cache whether to overite transactions in cache if not reading
+#* @post /get_historical_data
+get_historical_data = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
   
   config_file = Configuration::get_user_config(user_name)
   
@@ -11,7 +17,7 @@ test_main = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
   transactions_df = Process_Mint::get_mint_transactions(read_cache, write_cache)
   investments_df = Process_Mint::get_mint_investments(read_cache, write_cache)
 
-  if (!read_cache) {
+  if (!as.logical(read_cache)) {
     Process_Mint::close_mint_connection()
   }
   
@@ -26,11 +32,4 @@ test_main = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
            Month = lubridate::month(date))
 
   historical_df = transactions_df %>% Process_Mint::get_historical_summary(config_file, historical_start_date)
-
-  # forecast_range = c(create_datetime(2021, 11), create_datetime(2022, 12))
-  # projection_df = Process_Mint::mint_get_projections(transactions_df, 
-  #                                                   account_df,
-  #                                                   config_file,
-  #                                                   forecast_range, 
-  #                                                   historical_start_date)
 }
