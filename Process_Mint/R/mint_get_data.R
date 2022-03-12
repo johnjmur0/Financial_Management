@@ -1,47 +1,81 @@
-#Example command that worked for reference
-#"python C:/source/mintapi/mintapi/api.py --keyring --headless --session-path=None --mfa-method=soft-token --mfa-token=Q5ISNFBVWXM5FEJ5KKUI2WUXRSHZT5PS  johnjmur0@gmail.com --accounts --filename=C:/Users/JackMurphy/Downloads/Mint/accounts_10-03-2021_2.json"
+#TODO It'd be nice to have this be a class, cut down on dupe code
+get_mint_module = function() {
+    
+    #TODO This always fails first time with rpytools error, but always works second time. Figure out
+    reticulate::import_from_path(path = './Get_Mint', module = 'call_mint_API')
+}
 
-get_mint_datasets = function(config_file) {
-  
-  #TODO Have program manage this
-  api_filepath = "C:/source/mintapi/mintapi/api.py"
-  login_params = "--keyring --headless --session-path=None"
-  mfa_params = str_c("--mfa-method=soft-token --mfa-token=", config_file[["MFA_Token"]])
-  login_email = config_file[["Login_Email"]]
-  
-  date = format(as.Date(Sys.time(), tz = Sys.timezone()), format = "%m-%d-%Y")
-  #Delete files once they're read
-  dir = "C:/temp"
-  data_filepaths = tibble("Param" = c("--accounts", "--investments", "--transactions"),
-                          "FileName" = c(file.path(dir, str_c("accounts_", date, ".json")), 
-                                         file.path(dir, str_c("investments_", date, ".json")), 
-                                         file.path(dir, str_c("transactions_", date, ".csv"))))
-  
-  shell_cmd = str_c("python", api_filepath, login_params, mfa_params, login_email, sep = " ")
-  
-  ret_data = lapply(data_filepaths %>% df_to_list(), function(data_request, shell_cmd) {
-    
-    shell_cmd = str_c(shell_cmd, data_request[["Param"]], str_c("--filename=", data_request[["FileName"]]), sep = " ")
-    print(str_c("Processing command", shell_cmd, sep = " "))
-    
-    #TODO put a retry around this, it sometimes fails but works on 2nd try
-    result = shell(shell_cmd)
-    
-    if (result != 0) {
-      stop(str_c("Getting", data_request[["Param"]], "from mint api failed. Not sure how to get error message yet"))
+get_mint_connection = function(mint_module) {
+
+    mint_module[['get_mint_conn']]()
+}
+
+close_mint_connection = function() {
+
+    mint_module = mint_module_memoised()
+    mint_conn = mint_conn_memoised(mint_module)
+    mint_module[['close_mint_conn']](mint_conn)
+}
+
+mint_module_memoised = memoise::memoise(get_mint_module)
+mint_conn_memoised = memoise::memoise(get_mint_connection)
+
+check_cache = function(file_name) {
+
+    result = tryCatch( { 
+        
+        return(read_csv(file.path('./temp_cache', file_name)))
+        
+    }, error = function(e) {
+        
+        print('Reading from cache failed, reading from mint.')
+        return(tibble())      
+    })
+}
+
+get_mint_data_generic = function(file_name, function_name, read_cache, write_cache) {
+
+    if (read_cache) {
+
+        cache_df = check_cache(file_name)
+        
+        if (length(cache_df) > 0) {
+            return(cache_df)
+        }
     }
     
-    if (str_detect(data_request[['FileName']], ".json")) {
-      ret = rjson::fromJSON(paste(readLines(data_request[['FileName']]), collapse = ""))
+    mint_module = mint_module_memoised()
+    mint_conn = mint_conn_memoised(mint_module)
+    
+    ret_df = mint_module[[function_name]](mint_conn) %>% as_tibble()
+
+    if (write_cache) {
+        ret_df %>% write_csv(file.path('./temp_cache', file_name))
     }
-    else if (str_detect(data_request[['FileName']], ".csv")) {
-      ret = readr::read_csv(data_request[['FileName']])
-    }
-    else {
-      stop(str_c("file format not expected"), data_request[['FileName']], sep = " ")
-    }
-  },
-  shell_cmd = shell_cmd)
-  
-  return(ret_data)
+
+    return(ret_df)
+}
+
+get_mint_transactions = function(read_cache = FALSE, write_cache = FALSE) {
+    
+    file_name = 'transactions_df.csv'
+    fun_name = 'get_transactions_df'
+
+    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
+}
+
+get_mint_accounts = function(read_cache = FALSE, write_cache = FALSE) {
+
+    file_name = 'accounts_df.csv'
+    fun_name = 'get_account_df'
+
+    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
+}
+
+get_mint_investments = function(read_cache = FALSE, write_cache = FALSE) {
+
+    file_name = 'investments_df.csv'
+    fun_name = 'get_investments_df'
+
+    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
 }

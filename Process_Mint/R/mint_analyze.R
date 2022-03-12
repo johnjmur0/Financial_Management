@@ -1,10 +1,11 @@
-mint_get_historical_summary = function(transactions, config_file, historical_start_date)
-{
-  transactions = transactions %>% get_monthly_summary()
-    
-  category_df = transactions %>% monthly_category_sum(historical_start_date, include_outlier = TRUE)
+mint_get_historical_summary = function(transactions_df, config_file, historical_start_date) {
   
-  historicalSpendAnalysis(category_df)
+  #monthly_summary_df = transactions_df %>% get_monthly_summary()
+    
+  category_df = transactions_df %>% 
+    monthly_category_sum(config_file, historical_start_date, include_outlier = TRUE)
+  
+  analyze_historical_spend(category_df)
 }
 
 #' Create financial projections based on past data and manual adjustments
@@ -18,8 +19,8 @@ mint_get_historical_summary = function(transactions, config_file, historical_sta
 #' @export
 #'
 #' @examples mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
-mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
-{
+mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date) {
+  
   forecast_time_series = seq(min(forecast_date_range), max(forecast_date_range), by = "month")
   
   transactions = transactions %>% get_monthly_summary()

@@ -6,8 +6,8 @@
 #' @export
 #'
 #' @examples
-get_manual_adjustments = function(config_file)
-{
+get_manual_adjustments = function(config_file) {
+  
   lapply(config_file[['Manual_Adjustments']], function(adj) {
     
     #TODO Type, Var should be enum
@@ -20,8 +20,8 @@ get_manual_adjustments = function(config_file)
   }) %>% bind_rows()
 }
 
-get_account_balances = function(account_df, config_file, forecast_time_series)
-{
+get_account_balances = function(account_df, config_file, forecast_time_series) {
+  
   total_df = account_df %>% group_by(accountType) %>% summarise(Sum = sum(value))
   
   #TODO figure out how to handle multiple loans
@@ -32,8 +32,8 @@ get_account_balances = function(account_df, config_file, forecast_time_series)
          'BaseSalary' = Configuration::get_numeric_val_from_config(config_file, 'Base_Salary'))
 }
 
-get_fixed_payments = function(account_df, transactions, config_file, forecast_time_series, growth_rate = 0)
-{
+get_fixed_payments = function(account_df, transactions, config_file, forecast_time_series, growth_rate = 0) {
+  
   #TODO same as above, handle multiple loans
   interest_rate = account_df %>% dplyr::filter(accountType == 'loan' & interestRate > 0) %>% pull(interestRate)
   loan_payment = transactions %>% dplyr::filter(str_detect(category, 'loan')) %>% data.table::first() %>% pull(Amount)
@@ -50,8 +50,8 @@ get_fixed_payments = function(account_df, transactions, config_file, forecast_ti
 }
 
 #TODO not sure what I want to do with this yet
-create_structure_projections = function(category_df, transactions, years, zero_growth, config_file)
-{
+create_structure_projections = function(category_df, transactions, years, zero_growth, config_file) {
+  
   base_salary = Configuration::get_numeric_val_from_config(config_file, 'Base_Salary')
   
   #This says month but config has year?
@@ -84,8 +84,8 @@ create_structure_projections = function(category_df, transactions, years, zero_g
 }
 
 #Need config_file passed into here for salary function
-get_bonus_taxes = function(category_df, transactions, base_salary)
-{
+get_bonus_taxes = function(category_df, transactions, base_salary) {
+  
   tax_types = c('Federal Tax', 'State Tax')
   tax_refund = category_df %>% dplyr::filter(Category %in% tax_types) %>% pull(meanAnnualAcct) %>% sum()
   
@@ -94,5 +94,5 @@ get_bonus_taxes = function(category_df, transactions, base_salary)
   
   future_bonus = (historical_bonus / Configuration::get_numeric_val_from_config()) * base_salary
   
-  return (taxRefund + bonus)
+  return(taxRefund + bonus)
 }

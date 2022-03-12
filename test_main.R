@@ -15,12 +15,18 @@ test_main = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
     Process_Mint::close_mint_connection()
   }
   
-  forecast_range = c(create_datetime(2021, 11), create_datetime(2022, 12))
   historical_start_date = create_datetime(2018, 1)
 
-  projection_df = Process_Mint::mint_get_projections(transactions_df, 
-                                                    account_df,
-                                                    config_file,
-                                                    forecast_range, 
-                                                    historical_start_date)
+  historical_df = transactions_df %>% 
+    
+    mutate(Year = lubridate::year(date),
+           Month = lubridate::month(date)) %>%
+
+    Process_Mint::mint_get_historical_summary(config_file, historical_start_date)
+  # forecast_range = c(create_datetime(2021, 11), create_datetime(2022, 12))
+  # projection_df = Process_Mint::mint_get_projections(transactions_df, 
+  #                                                   account_df,
+  #                                                   config_file,
+  #                                                   forecast_range, 
+  #                                                   historical_start_date)
 }
