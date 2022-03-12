@@ -124,11 +124,13 @@ final_spend_summary = function(meta_spend_df) {
   total_profit_df = clean_spend_df %>% 
     mutate(Timestamp = lubridate::mdy(str_c(Month, 1, Year, sep = '/'))) %>%  
     spread(key = Category, value = total_value) %>% 
-    mutate(Profit = discretionary + groceries + housing + loans + music + income) %>% 
+    #TODO expenses need to be negative, move this into config
+    mutate(Profit = income + (discretionary + groceries + housing + loans + music)) %>% 
     gather(key = Category, value = total_value, -Year, -Month, -Timestamp)
   
   total_profit_df %>% 
   spread(key = Category, value = total_value) %>% 
+  #TODO define this in config
   mutate(FutureExpenses = discretionary + groceries + music)
 }
 

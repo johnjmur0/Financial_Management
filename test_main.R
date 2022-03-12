@@ -17,12 +17,16 @@ test_main = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
   
   historical_start_date = create_datetime(2018, 1)
 
-  historical_df = transactions_df %>% 
-    
-    mutate(Year = lubridate::year(date),
-           Month = lubridate::month(date)) %>%
+  transactions_df = transactions_df %>% 
 
-    Process_Mint::mint_get_historical_summary(config_file, historical_start_date)
+    filter(date <= Sys.time()) %>%
+    
+    mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
+           Year = lubridate::year(date),
+           Month = lubridate::month(date))
+
+  historical_df = transactions_df %>% Process_Mint::get_historical_summary(config_file, historical_start_date)
+
   # forecast_range = c(create_datetime(2021, 11), create_datetime(2022, 12))
   # projection_df = Process_Mint::mint_get_projections(transactions_df, 
   #                                                   account_df,

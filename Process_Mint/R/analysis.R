@@ -1,4 +1,4 @@
-mint_get_historical_summary = function(transactions_df, config_file, historical_start_date) {
+get_historical_summary = function(transactions_df, config_file, historical_start_date) {
   
   #monthly_summary_df = transactions_df %>% get_monthly_summary()
     
@@ -18,8 +18,8 @@ mint_get_historical_summary = function(transactions_df, config_file, historical_
 #' @return
 #' @export
 #'
-#' @examples mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
-mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date) {
+#' @examples get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
+get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date) {
   
   forecast_time_series = seq(min(forecast_date_range), max(forecast_date_range), by = "month")
   

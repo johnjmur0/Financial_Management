@@ -142,21 +142,26 @@ get_avg_spend_monthly = function(category_df,
 get_avg_income = function(category_df, start_date = NULL) {
   
   start_date = if_else(is.null(start_date), 
-                       lubridate::ymd(str_c(min(category_df[["Year"]]), min(category_df[["Month"]]), 1, sep="/")),
+                       lubridate::ymd(str_c(min(category_df[["Year"]]), min(category_df[["Month"]]), 1, sep = "/")),
                        start_date)
   
-  category_df %>% dplyr::filter(Type == "Credit") %>%
+  category_df %>% 
+  
+    filter(Type == "Credit") %>%
     
     mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "/"))) %>% 
     
     #TODO handle this in config better
     #Extra income, don't count in average
-    dplyr::filter(!str_detect(category, "Tax") | !(category == "Income" & Monthly_Total > 1000)) %>% 
+    filter(!str_detect(category, "Tax") | !(category == "Income" & Monthly_Total > 1000)) %>% 
     
     #Current month almost always incomplete, can distort average
-    dplyr::filter(between(Year_Month, start_date, Sys.time())) %>% 
+    filter(between(Year_Month, start_date, Sys.time())) %>% 
     
-    group_by(Year, Month) %>% summarise(meanIncome = sum(Monthly_Total)) %>% ungroup() %>% 
+    group_by(Year, Month) %>%
     
-    summarise(meanIncome = mean(meanIncome)) %>% pull()
+    summarise(meanIncome = sum(Monthly_Total)) %>% 
+    ungroup() %>% 
+    summarise(meanIncome = mean(meanIncome)) %>% 
+    pull()
 }
