@@ -1,25 +1,24 @@
 library(tidyverse)
 library(plumber)
+library(reticulate)
 devtools::load_all('./Configuration')
 devtools::load_all('./Process_Mint')
 devtools::load_all('./Utilities')
 
-#* get historical transactions aggregated 
+#* get historical transactions aggregated by month and category 
 #* @param user_name key for config file to use
+#* @param time_vec time vector to aggregate on
 #* @param read_cache whether to read transactions from cache if possible
 #* @param write_cache whether to overite transactions in cache if not reading
-#* @post /get_historical_data
-get_historical_data = function(user_name = 'jjm', read_cache = TRUE, write_cache = TRUE) {
+#* @post /get_historical_by_category
+get_historical_by_category = function(user_name = 'jjm', 
+                                       = c('Year', 'Month', 'Day'), 
+                                      read_cache = TRUE, 
+                                      write_cache = TRUE) {
   
   config_file = Configuration::get_user_config(user_name)
-  
-  account_df = Process_Mint::get_mint_accounts(read_cache, write_cache)  
-  transactions_df = Process_Mint::get_mint_transactions(read_cache, write_cache)
-  investments_df = Process_Mint::get_mint_investments(read_cache, write_cache)
-
-  if (!as.logical(read_cache)) {
-    Process_Mint::close_mint_connection()
-  }
+  time_vec
+  transactions_df = Process_Mint::get_mint_data_by_type_memoised('transactions', read_cache, write_cache)
   
   historical_start_date = create_datetime(2018, 1)
 
@@ -29,7 +28,9 @@ get_historical_data = function(user_name = 'jjm', read_cache = TRUE, write_cache
     
     mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
            Year = lubridate::year(date),
-           Month = lubridate::month(date))
+           Month = lubridate::month(date),
+           Day = as.numeric(lubridate::day(date)))
 
-  historical_df = transactions_df %>% Process_Mint::get_historical_summary(config_file, historical_start_date)
+  transactions_df %>% 
+    Process_Mint::get_historical_summary(time_vec, config_file, historical_start_date)
 }

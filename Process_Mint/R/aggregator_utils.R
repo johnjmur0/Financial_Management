@@ -6,6 +6,8 @@
 #' @export
 #'
 #' @examples get_monthly_summary(transactions)
+#' 
+#' #TODO Hopefully delete this function
 get_monthly_summary = function(transactions) {
   
   Utilities::df_col_has_value(transactions, "date", "Date")
@@ -30,59 +32,7 @@ get_monthly_summary = function(transactions) {
     ungroup()
 }
 
-#' get monthly sum of spending by category
-#'
-#' @param transactions df of mint transactions 
-#' @param start_date date to keep transactions 
-#' @param include_outlier whether to remove outliers as defined in user config
-#'
-#' @return
-#' @export
-#'
-#' @examples
-monthly_category_sum = function(transactions, config_file, start_date, include_outlier = FALSE) {
-  
-  Utilities::df_col_has_value(transactions, "Year", "numeric")
-  Utilities::df_col_has_value(transactions, "Month", "numeric")
-  Utilities::df_col_has_value(transactions, "category", "character")
-  Utilities::df_col_has_value(transactions, "transaction_type", "character")
-  
-  transactions = transactions %>% 
-    mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-")))
-  
-  #TODO handle outlier categories, plus category + amount combo
-  if (!include_outlier) {
-    
-      transactions = lapply(config_file[["Outlier_Months"]], function(outlier, transactions) {
-      
-      exclude_month = lubridate::ymd(str_c(outlier[["Year"]], outlier[["Month"]], 1, sep = "-"))
-      
-      transactions %>% dplyr::filter(Year_Month != exclude_month)
-      
-      },
-      transactions = transactions) %>% 
-      bind_rows() %>% 
-      distinct()
-  }
-  
-  categories = transactions %>% 
-  
-    filter(date >= start_date) %>%
-    
-    group_by(Year, Month, category, transaction_type) %>% 
-    
-    summarise(Monthly_Total = sum(amount)) %>% 
-    
-    rename(Type = transaction_type) %>%  
-    
-    mutate(Type = if_else(Type == 'credit', 'Credit', 'Debit')) %>% 
-    
-    filter(Monthly_Total != 0) %>% 
-    
-    ungroup()
-}
-
-
+#TODO Hopefully delete this function
 get_avg_spend_monthly = function(category_df, 
                                  transactions, 
                                  return_df = FALSE, 
@@ -91,9 +41,6 @@ get_avg_spend_monthly = function(category_df,
   
   #TODO handle these categories in config
   one_time_categories = c("air travel", "hide from budgets & trends", "credit card payment")
-  
-  #Music purchases, nonrepeatable only greater than 1k
-  #largeOneTimeCategories = c("Entertainment", "Hobbies")
   
   if (remove_income) {
     category_df = category_df %>% filter(Type == "Debit")
@@ -106,11 +53,11 @@ get_avg_spend_monthly = function(category_df,
 
   spend_monthly_df = category_df %>% 
       
-    dplyr::filter(!(category %in% one_time_categories) & Year <= lubridate::year(Sys.time())) %>%
+    filter(!(category %in% one_time_categories)) %>%
     
     group_by(Year, Month, category) %>% 
     
-    summarise(Total_Spend = sum(Monthly_Total)) %>% 
+    summarise(Total_Spend = sum(Total)) %>% 
     
     ungroup()
   
@@ -139,6 +86,7 @@ get_avg_spend_monthly = function(category_df,
     pull()
 }
 
+#TODO Hopefully delete this function
 get_avg_income = function(category_df, start_date = NULL) {
   
   start_date = if_else(is.null(start_date), 
@@ -164,4 +112,55 @@ get_avg_income = function(category_df, start_date = NULL) {
     ungroup() %>% 
     summarise(meanIncome = mean(meanIncome)) %>% 
     pull()
+}
+
+#' get sum of spending by category with custom aggregation
+# '
+#' @param transactions df of mint transactions 
+#' @param start_date date to keep transactions after
+#' @param include_outlier whether to remove outliers as defined in user config
+#'
+#' @return
+#' @export
+#'
+#' @examples
+category_sum = function(transactions, config_file, start_date, agg_vec, include_outlier = FALSE) {
+  
+  lapply(agg_vec, function(val) {
+    Utilities::df_col_has_value(transactions, val, "numeric") 
+  })
+
+  Utilities::df_col_has_value(transactions, "category", "character")
+  Utilities::df_col_has_value(transactions, "transaction_type", "character")
+    
+  #TODO handle outlier categories, plus category + amount combo
+  if (!include_outlier) {
+    
+      transactions = lapply(config_file[["Outlier_Months"]], function(outlier, transactions) {
+      
+        exclude_month = lubridate::ymd(str_c(outlier[["Year"]], outlier[["Month"]], 1, sep = "-"))
+        transactions %>% 
+        mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-"))) %>%
+        filter(Year_Month != exclude_month)
+      
+      },
+      transactions = transactions) %>% 
+      bind_rows() %>% 
+      distinct()
+  }
+
+  #TODO handle these categories in config
+  one_time_categories = c("air travel", "hide from budgets & trends", "credit card payment")
+  
+  categories = transactions %>% 
+  
+    filter(date >= start_date & !(category %in% one_time_categories)) %>%
+    
+    group_by(!!!syms(agg_vec), category, transaction_type) %>% 
+    
+    summarise(total = sum(amount)) %>%
+    
+    filter(total != 0) %>% 
+    
+    ungroup()
 }

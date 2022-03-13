@@ -1,11 +1,12 @@
-get_historical_summary = function(transactions_df, config_file, historical_start_date) {
-  
-  #monthly_summary_df = transactions_df %>% get_monthly_summary()
+get_historical_summary = function(transactions_df, time_vec, config_file, historical_start_date) {
+
+  transactions_df %>% 
     
-  category_df = transactions_df %>% 
-    monthly_category_sum(config_file, historical_start_date, include_outlier = TRUE)
+    category_sum(config_file, historical_start_date, time_vec, include_outlier = TRUE) %>%
   
-  analyze_historical_spend(category_df)
+    aggregate_categories_small(time_vec) %>%
+  
+    aggregate_categories_big(time_vec)
 }
 
 #' Create financial projections based on past data and manual adjustments

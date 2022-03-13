@@ -1,3 +1,4 @@
+#TODO Hopefully delete this function
 get_distribution = function(spend_df, group_vec) {
   
   spend_df %>% 
@@ -13,25 +14,28 @@ get_distribution = function(spend_df, group_vec) {
               SD = sd(TotalValue))
 }
 
-aggregate_categories = function(category_vec, spend_df, spend_var)  {
+aggregate_categories = function(category_vec, spend_df, col_name, time_vec)  {
   
-  lapply(category_vec, function(category_val, spend_df, spend_var) {
+  lapply(category_vec, function(category_val, spend_df, col_name, time_vec) {
+    
+    category_definition = category_val %>% pull() %>% tolower()
     
     spend_df %>% 
-      filter(Category %in% (category_val %>% pull() %>% tolower())) %>% 
-      group_by(Year, Month) %>% 
-      summarise(total_value := sum(!!sym(spend_var))) %>% 
-      mutate(Category = category_val %>% colnames())
+      filter(category %in% category_definition) %>% 
+      group_by(!!!syms(time_vec)) %>% 
+      summarise(total := sum(!!sym(col_name))) %>% 
+      mutate(category = category_val %>% colnames())
   },
   spend_df = spend_df,
-  spend_var = spend_var) %>% 
+  col_name = col_name,
+  time_vec = time_vec) %>% 
   bind_rows()
 }
 
-aggregate_categories_small = function(monthly_spend_df) {
+aggregate_categories_small = function(category_df, time_vec) {
 
   #TODO put these all in configs
-  #### Aggregated categories ####
+  ####### Aggregated categories ####
   taxes_insurance = tibble("taxes_insurance" = c("Federal Tax", "State Tax", "Taxes", 
                                                  c("Life Insurance", "Home Insurance", "Health Insurance")))
   
@@ -79,16 +83,15 @@ aggregate_categories_small = function(monthly_spend_df) {
                        rent, drinking, bills_fees, groceries, shopping, taxes_insurance,
                        ignore, misc_income, paycheck, loans, bonus)
   
-  agg_spend_df = all_categories %>% aggregate_categories(monthly_spend_df, "TotalSpend") 
-  
-  return(agg_spend_df)
+  all_categories %>% aggregate_categories(category_df, 'total', time_vec)
 }
 
-aggregate_categories_big = function(agg_spend_df) {
+aggregate_categories_big = function(agg_spend_df, time_vec) {
 
   #TODO put into configs
   disrectionary = tibble("discretionary" = c("taxi", "gift", "drinking", 
-                                             "personal", "shopping", "foodGroup", "uncategorized", "bills"))
+                                             "personal", "shopping", "foodGroup", 
+                                             "uncategorized", "bills"))
   music = tibble("music" = c("hobbies", "coaching"))
   housing = tibble("housing" = c("rent"))
   groceries = tibble("groceries" = c("groceries"))
@@ -101,53 +104,25 @@ aggregate_categories_big = function(agg_spend_df) {
                          
   meta_category_vec = list(disrectionary, music, housing, groceries, income, investments, loans, bonus)
   
-  meta_spend_df = meta_category_vec %>% aggregate_categories(agg_spend_df, "total_value")
-  
-  return(meta_spend_df)
+  meta_category_vec %>% aggregate_categories(agg_spend_df, 'total', time_vec)
 }
 
-final_spend_summary = function(meta_spend_df) {
+group_historical_spend = function(category_df, time_vec) {
 
-  #TODO Something botched here - Mint doesn't have transactions, can't go that far back in BoA
-  clean_spend_df = meta_spend_df %>% 
-  
-    filter(!(Year == 2019 & Month == 1) & !(Year == 2018 & Month == 12)) %>% 
+  # monthly_spend_df = category_df %>% 
     
-    #Remove current month b/c its almost always unfinished
-    filter(!(Year == lubridate::year(Sys.time()) & Month == lubridate::month(Sys.time()))) %>% 
+    #get_avg_spend_monthly(return_df = TRUE, remove_income = FALSE, remove_loans = FALSE) %>% 
     
-    #TODO get other contributions added here
-    filter(Category != "investments") %>% 
+    # rename(TotalSpend = Total_Spend,
+    #        Category = category) %>% 
     
-    ungroup()
-
-  total_profit_df = clean_spend_df %>% 
-    mutate(Timestamp = lubridate::mdy(str_c(Month, 1, Year, sep = '/'))) %>%  
-    spread(key = Category, value = total_value) %>% 
-    #TODO expenses need to be negative, move this into config
-    mutate(Profit = income + (discretionary + groceries + housing + loans + music)) %>% 
-    gather(key = Category, value = total_value, -Year, -Month, -Timestamp)
-  
-  total_profit_df %>% 
-  spread(key = Category, value = total_value) %>% 
-  #TODO define this in config
-  mutate(FutureExpenses = discretionary + groceries + music)
-}
-
-analyze_historical_spend = function(category_df) {
-
-  monthly_spend_df = category_df %>% 
-    
-    get_avg_spend_monthly(return_df = TRUE, remove_income = FALSE, remove_loans = FALSE) %>% 
-    
-    rename(TotalSpend = Total_Spend,
-           Category = category) %>% 
-    
-    arrange(Year, Month, Category)
+    # arrange(Year, Month, Category)
    
-  agg_spend_df = aggregate_categories_small(monthly_spend_df)  
+  category_df %>% 
   
-  meta_spend_df = agg_spend_df %>% aggregate_categories_big()
+    aggregate_categories_small(time_vec) %>%
   
-  future_spend_df = meta_spend_df %>% final_spend_summary()
+    aggregate_categories_big() %>%
+    
+    final_spend_summary()
 }

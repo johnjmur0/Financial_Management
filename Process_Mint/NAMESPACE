@@ -2,4 +2,4 @@
 
 export(get_monthly_summary)
 export(get_projections)
-export(monthly_category_sum)
+export(category_sum)

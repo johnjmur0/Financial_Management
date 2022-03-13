@@ -22,7 +22,7 @@ mint_conn_memoised = memoise::memoise(get_mint_connection)
 
 check_cache = function(file_name) {
 
-    result = tryCatch( { 
+    result = tryCatch({ 
         
         return(read_csv(file.path('./temp_cache', file_name)))
         
@@ -79,3 +79,23 @@ get_mint_investments = function(read_cache = FALSE, write_cache = FALSE) {
 
     return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
 }
+
+get_mint_data_by_type = function(data_name, read_cache, write_cache) {
+
+    switch(data_name,
+
+        transactions = {
+            return(get_mint_transactions(read_cache, write_cache))
+        },
+        accounts = {
+            return(get_mint_accounts(read_cache, write_cache)) 
+        },
+        investments = {
+            return(get_mint_investments(read_cache, write_cache))
+        },
+        
+        stop(str_c('Provided data_name', data_name, 'not supported.', sep = ' '))
+    )
+}
+
+get_mint_data_by_type_memoised = memoise::memoise(get_mint_data_by_type)
