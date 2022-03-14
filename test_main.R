@@ -5,6 +5,8 @@ devtools::load_all('./Configuration')
 devtools::load_all('./Process_Mint')
 devtools::load_all('./Utilities')
 
+#pr('./test_main.R') %>% pr_run(port=8000)
+
 #* get historical transactions aggregated by month and category 
 #* @param user_name key for config file to use
 #* @param time_vec time vector to aggregate on
@@ -12,7 +14,7 @@ devtools::load_all('./Utilities')
 #* @param write_cache whether to overite transactions in cache if not reading
 #* @post /get_historical_by_category
 get_historical_by_category = function(user_name = 'jjm', 
-                                       = c('Year', 'Month', 'Day'), 
+                                      time_vec = c('Year', 'Month', 'Day'), 
                                       read_cache = TRUE, 
                                       write_cache = TRUE) {
   
