@@ -11,7 +11,7 @@ devtools::load_all('./Utilities')
 #* @param user_name key for config file to use
 #* @param time_vec time vector to aggregate on
 #* @param read_cache whether to read transactions from cache if possible
-#* @param write_cache whether to overite transactions in cache if not reading
+#* @param write_cache whether to overwrite transactions in cache if not reading
 #* @post /get_historical_by_category
 get_historical_by_category = function(user_name = 'jjm', 
                                       time_vec = c('Year', 'Month', 'Day'), 
@@ -19,7 +19,7 @@ get_historical_by_category = function(user_name = 'jjm',
                                       write_cache = TRUE) {
   
   config_file = Configuration::get_user_config(user_name)
-  time_vec
+  
   transactions_df = Process_Mint::get_mint_data_by_type_memoised('transactions', read_cache, write_cache)
   
   historical_start_date = create_datetime(2018, 1)

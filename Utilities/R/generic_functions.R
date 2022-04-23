@@ -41,7 +41,7 @@ create_datetime = function(year, month)
 df_col_has_value = function(df, column, expected_type)
 {
   if(is.null(df[[column]]) || length(df[[column]]) == 0  || is.na(df[[column]])) {
-    stop("provided data frame column was null, na, or empty")
+    stop(str_c("provided data frame column", column, "was null, na, or empty", sep = " "))
   }
   
   if (class(df[[column]]) != expected_type) {
