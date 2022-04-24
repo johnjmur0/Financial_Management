@@ -14,13 +14,14 @@ devtools::load_all('./Utilities')
 #* @param write_cache whether to overwrite transactions in cache if not reading
 #* @post /get_historical_by_category
 get_historical_by_category = function(user_name = 'jjm', 
-                                      time_vec = c('Year', 'Month', 'Day'), 
+                                      time_vec = c('year', 'month', 'day'), 
                                       read_cache = TRUE, 
                                       write_cache = TRUE) {
   
   config_file = Configuration::get_user_config(user_name)
   
-  transactions_df = Process_Mint::get_mint_data_by_type_memoised('transactions', read_cache, write_cache)
+  transactions_df = Process_Mint::get_mint_data_by_type_memoised('transactions', read_cache, write_cache) %>%
+    mutate(date = lubridate::with_tz(date, 'UTC'))
   
   historical_start_date = create_datetime(2018, 1)
 
@@ -29,9 +30,9 @@ get_historical_by_category = function(user_name = 'jjm',
     filter(date <= Sys.time()) %>%
     
     mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
-           Year = lubridate::year(date),
-           Month = lubridate::month(date),
-           Day = as.numeric(lubridate::day(date)))
+           year = lubridate::year(date),
+           month = lubridate::month(date),
+           day = as.numeric(lubridate::day(date)))
 
   transactions_df %>% 
     Process_Mint::get_historical_summary(time_vec, config_file, historical_start_date)
