@@ -37,3 +37,21 @@ get_historical_by_category = function(user_name = 'jjm',
   transactions_df %>% 
     Process_Mint::get_historical_summary(time_vec, config_file, historical_start_date)
 }
+
+#* get currnet account values
+#* @param user_name key for config file to us
+#* @param read_cache whether to read accounts from cache if possible
+#* @param write_cache whether to overwrite transactions in cache if not reading
+#* @post /get_current_accounts
+get_current_accounts = function(user_name = 'jjm', 
+                                read_cache = FALSE, 
+                                write_cache = FALSE) {
+
+  accounts_df = Process_Mint::get_mint_data_by_type_memoised('accounts', read_cache, write_cache)
+
+  accounts_df %>% 
+    filter(accountSystemStatus == 'ACTIVE') %>% 
+    mutate(value = unlist(value)) %>% 
+    group_by(accountType) %>% 
+    summarise(Total = sum(value))  
+}
