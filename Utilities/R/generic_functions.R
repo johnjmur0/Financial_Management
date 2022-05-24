@@ -8,8 +8,7 @@
 #' @export
 #'
 #' @examples df_to_list(df)
-df_to_list = function(df)
-{
+df_to_list = function(df) {
   return(df %>% split(seq_len(nrow(.))))
 }
 
@@ -22,11 +21,9 @@ df_to_list = function(df)
 #' @export
 #'
 #' @examples create_datetime(year, month)
-create_datetime = function(year, month)
-{
+create_datetime = function(year, month) {
   lubridate::ymd(paste(year, month, 1, sep = "-"))
 }
-
 
 #' check that dataframe column has data of specified type
 #'
@@ -38,14 +35,14 @@ create_datetime = function(year, month)
 #' @export
 #'
 #' @examples df_col_has_value(df, column, expected_type)
-df_col_has_value = function(df, column, expected_type)
-{
-  if(is.null(df[[column]]) || length(df[[column]]) == 0  || is.na(df[[column]])) {
-    stop("provided data frame column was null, na, or empty")
+df_col_has_value = function(df, column, expected_type) {
+  
+  if (is.null(df[[column]]) || length(df[[column]]) == 0 || is.na(df[[column]])) {
+    stop(str_c("provided data frame column", column, "was null, na, or empty", sep = " "))
   }
   
   if (class(df[[column]]) != expected_type) {
     stop(str_c("provided data frame column did not equal expected class. Provided", 
-               class(df[[column]]), "but expected", expected_type, sep=" "))
+               class(df[[column]]), "but expected", expected_type, sep = " "))
   }
 }

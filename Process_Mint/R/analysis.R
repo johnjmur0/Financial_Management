@@ -1,10 +1,12 @@
-mint_get_historical_summary = function(transactions, config_file, historical_start_date)
-{
-  transactions = transactions %>% get_monthly_summary() %>% 
+get_historical_summary = function(transactions_df, time_vec, config_file, historical_start_date) {
+
+  transactions_df %>% 
     
-  category_df = transactions %>% monthly_category_sum(historical_start_date, include_outlier = TRUE)
+    summarise_categories(config_file, historical_start_date, time_vec, include_outlier = TRUE) %>%
   
-  historicalSpendAnalysis(category_df)
+    aggregate_categories_small(time_vec) %>%
+  
+    aggregate_categories_big(time_vec)
 }
 
 #' Create financial projections based on past data and manual adjustments
@@ -17,9 +19,9 @@ mint_get_historical_summary = function(transactions, config_file, historical_sta
 #' @return
 #' @export
 #'
-#' @examples mint_get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
-mint_get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date)
-{
+#' @examples get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
+get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date) {
+  
   forecast_time_series = seq(min(forecast_date_range), max(forecast_date_range), by = "month")
   
   transactions = transactions %>% get_monthly_summary()
@@ -54,5 +56,5 @@ mint_get_projections = function(transactions, account_df, config_file, forecast_
     projection_df = projection_df %>% select(-contains("Loan"))
   }
   
-  return (projection_df)
+  return(projection_df)
 }

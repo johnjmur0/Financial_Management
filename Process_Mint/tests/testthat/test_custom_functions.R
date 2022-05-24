@@ -1,5 +1,7 @@
 testthat::context('test custom/config related functions')
 
+library(tidyverse)
+
 test_transactions_df = readr::read_csv('test_transactions.csv')
 
 testthat::test_that('test get_manual_adjustments', {
@@ -8,10 +10,10 @@ testthat::test_that('test get_manual_adjustments', {
   test_config[["Manual_Adjustments"]] = list(list('Month' = 4, 
                                                   'Year' = 2019,
                                                   'Var' = 'Investments',
-                                                  'Type' ='Credit',
+                                                  'Type' = 'Credit',
                                                   'Amount' = 1000))
 
-  adjustments = ProcessMint::get_manual_adjustments(test_config)
+  adjustments = Process_Mint::get_manual_adjustments(test_config)
 
   testthat::expect_equal(lubridate::ymd(str_c(2019, 4, 1, sep = "/")), adjustments[["TimeAdj"]])
   testthat::expect_equal(1000, adjustments[["Amt"]])
@@ -23,12 +25,13 @@ testthat::test_that('test get_account_balances', {
   
   test_config = c()
   test_config[["Base_Salary"]] = 1000000
+  
   test_series = seq(lubridate::ymd(str_c(2022, 1, 1, sep = "/")), 
-                    lubridate::ymd(str_c(2022, 2, 1, sep = "/")), by='month')
+                    lubridate::ymd(str_c(2022, 2, 1, sep = "/")), by = 'month')
   
-  ProcessMint::get_account_df()
+  test_account_df = Configuration::get_account_df(test_config)
   
-  account_balances = ProcessMint::get_account_balances(test_account_df, test_config, test_series)
+  account_balances = Process_Mint::get_account_balances(test_account_df, test_config, test_series)
   
   testthat::expect_equal()
 })
