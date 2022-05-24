@@ -7,14 +7,12 @@
 #' @export
 #'
 #' @examples
-get_user_config = function(user_name)
-{
+get_user_config = function(user_name) {
   config_path = file.path('./Config_Files', str_c('config_', user_name, '.json'))
   config_file = rjson::fromJSON(file = config_path)
 }
   
-get_config_field_generic = function(config_file, field_name)
-{
+get_config_field_generic = function(config_file, field_name) {
   #don't need try catch here b/c even if config_file is blank or NULL, this returns NULL
   field_val = config_file[[field_name]]
   
@@ -34,8 +32,7 @@ get_config_field_generic = function(config_file, field_name)
 #' @export
 #'
 #' @examples
-get_numeric_val_from_config = function(config_file, field_name)
-{
+get_numeric_val_from_config = function(config_file, field_name) {
   field_val = get_config_field_generic(config_file, field_name)
   
   if (is.na(as.numeric(field_val))) { 
@@ -53,8 +50,8 @@ get_numeric_val_from_config = function(config_file, field_name)
 #' @export
 #'
 #' @examples
-get_account_df = function(accounts_json)
-{
+get_account_df = function(accounts_json) {
+  
   accounts_json %>% 
   
     tidyjson::spread_all() %>% 

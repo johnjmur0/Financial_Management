@@ -22,7 +22,8 @@ mint_conn_memoised = memoise::memoise(get_mint_connection)
 
 check_cache = function(file_name) {
 
-    result = tryCatch( {     
+    result = tryCatch({
+            
         return(read_csv(file.path('./temp_cache', file_name)))
         
     }, error = function(e) {

@@ -1,19 +1,3 @@
-#TODO Hopefully delete this function
-get_distribution = function(spend_df, group_vec) {
-  
-  spend_df %>% 
-  
-    group_by(!!!syms(group_vec)) %>% 
-    
-    summarize(Min = min(TotalValue),
-              p25 = quantile(TotalValue, probs = .25),
-              p50 = quantile(TotalValue, probs = .5),
-              Mean = mean(TotalValue), 
-              p75 = quantile(TotalValue, probs = .75),
-              Max = max(TotalValue),
-              SD = sd(TotalValue))
-}
-
 aggregate_categories = function(category_vec, spend_df, col_name, time_vec)  {
   
   lapply(category_vec, function(category_val, spend_df, col_name, time_vec) {
@@ -105,24 +89,4 @@ aggregate_categories_big = function(agg_spend_df, time_vec) {
   meta_category_vec = list(disrectionary, music, housing, groceries, income, investments, loans, bonus)
   
   meta_category_vec %>% aggregate_categories(agg_spend_df, 'total', time_vec)
-}
-
-group_historical_spend = function(category_df, time_vec) {
-
-  # monthly_spend_df = category_df %>% 
-    
-    #get_avg_spend_monthly(return_df = TRUE, remove_income = FALSE, remove_loans = FALSE) %>% 
-    
-    # rename(TotalSpend = Total_Spend,
-    #        Category = category) %>% 
-    
-    # arrange(Year, Month, Category)
-   
-  category_df %>% 
-  
-    aggregate_categories_small(time_vec) %>%
-  
-    aggregate_categories_big() %>%
-    
-    final_spend_summary()
 }

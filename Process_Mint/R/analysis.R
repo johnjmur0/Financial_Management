@@ -2,7 +2,7 @@ get_historical_summary = function(transactions_df, time_vec, config_file, histor
 
   transactions_df %>% 
     
-    category_sum(config_file, historical_start_date, time_vec, include_outlier = TRUE) %>%
+    summarise_categories(config_file, historical_start_date, time_vec, include_outlier = TRUE) %>%
   
     aggregate_categories_small(time_vec) %>%
   

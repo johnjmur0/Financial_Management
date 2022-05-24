@@ -114,7 +114,6 @@ get_avg_income = function(category_df, start_date = NULL) {
     pull()
 }
 
-#' get sum of spending by category with custom aggregation
 # '
 #' @param transactions df of mint transactions 
 #' @param start_date date to keep transactions after
@@ -124,7 +123,7 @@ get_avg_income = function(category_df, start_date = NULL) {
 #' @export
 #'
 #' @examples
-category_sum = function(transactions, config_file, start_date, agg_vec, include_outlier = FALSE) {
+summarise_categories = function(transactions, config_file, start_date, agg_vec, include_outlier = FALSE) {
   
   lapply(agg_vec, function(val) {
     Utilities::df_col_has_value(transactions, val, "numeric") 
