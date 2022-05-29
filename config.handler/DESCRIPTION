@@ -1,9 +1,17 @@
 Package: config.handler
-Title: Config settings for Financial_Management
+Title: config reading and processing
 Version: 0.1.0
 Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
-Description: Personal Finances
+Description: Config settings for Financial_Management.
 Depends: R (>= 3.1.0)
-License: Internal
+Imports:
+    dplyr,
+    janitor,
+    rjson,
+    stringr,
+    testthat,
+    tidyjson
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
+RoxygenNote: 7.1.2

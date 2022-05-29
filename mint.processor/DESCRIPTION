@@ -1,8 +1,11 @@
 Package: mint.processor
-Title: Mint Functionality for Financial_Management
+Title: mint.processor
 Version: 0.1.0
 Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
-Description: Personal Finances
+Description: Processing and analysis of mint datas for Financial_Management.
+Imports:
+    dplyr,
+    utilities,
 Depends: R (>= 3.1.0)
 License: Internal
 Encoding: UTF-8

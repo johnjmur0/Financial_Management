@@ -1,5 +1,4 @@
-source("renv/activate.R")
 library(testthat)
-library(Configuration)
+library(config.handler)
 
-test_check("Configuration")
+test_check("config.handler")

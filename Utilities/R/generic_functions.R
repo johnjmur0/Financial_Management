@@ -3,8 +3,8 @@
 #' @param df data.frame or tibble
 #'
 #' @return list
+#' @import dplyr
 #' @export
-#' @importFrom magrittr %>%
 #'
 df_to_list = function(df) {
   

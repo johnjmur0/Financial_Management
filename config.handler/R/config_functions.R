@@ -1,12 +1,11 @@
-#TODO sure how to handle user name at this point
 #' obtain user config_file
 #'
 #' @param user_name user name indicating config file
 #'
-#' @return
-#' @export
+#' @return list
+#' @import rjson 
+#' @import stringr
 #'
-#' @examples
 get_user_config = function(user_name) {
   config_path = file.path('./Config_Files', str_c('config_', user_name, '.json'))
   config_file = rjson::fromJSON(file = config_path)
@@ -28,14 +27,15 @@ get_config_field_generic = function(config_file, field_name) {
 #' @param config_file user config file
 #' @param field_name name of numeric field
 #'
-#' @return
+#' @return numeric
+#' @import stringr
 #' @export
 #'
-#' @examples
 get_numeric_val_from_config = function(config_file, field_name) {
   field_val = get_config_field_generic(config_file, field_name)
   
-  if (is.na(as.numeric(field_val))) { 
+  if (is.na(as.numeric(field_val))) {
+
     stop(str_c(field_name, field_val, 'from config is not numeric', sep = ' ')) 
   }
   
@@ -44,25 +44,29 @@ get_numeric_val_from_config = function(config_file, field_name) {
 
 #' translate account json into df
 #'
-#' @param account_json json returned from mint api for accounts
+#' @param accounts_json json returned from mint api for accounts
 #'
-#' @return
+#' @return tibble
+#' @import dplyr
 #' @export
 #'
-#' @examples
 get_account_df = function(accounts_json) {
+  
+  account_name <- account_type <- account_system_status <- value <- interest_rate <- NULL
   
   accounts_json %>% 
   
     tidyjson::spread_all() %>% 
     
     as_tibble() %>%
+
+    janitor::clean_names() %>%
     
-    select(accountName, accountType, accountSystemStatus, value, interestRate) %>% 
+    select(account_name, account_type, account_system_status, value, interest_rate) %>% 
     
-    dplyr::filter(accountSystemStatus == 'ACTIVE') %>% 
+    filter(account_system_status == 'ACTIVE') %>% 
     
-    select(-accountSystemStatus) %>% 
+    select(-account_system_status) %>% 
     
-    mutate(interestRate = if_else(is.na(interestRate), 0, interestRate))
+    mutate(interest_rate = if_else(is.na(interest_rate), 0, interest_rate))
 }
