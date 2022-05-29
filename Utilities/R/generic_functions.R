@@ -1,14 +1,14 @@
-#TODO put this into Utils package
-
 #' split dataframe row wise for iteration
 #'
 #' @param df data.frame or tibble
 #'
 #' @return list
 #' @export
+#' @importFrom magrittr %>%
 #'
-#' @examples df_to_list(df)
 df_to_list = function(df) {
+  
+  . <- NULL
   return(df %>% split(seq_len(nrow(.))))
 }
 
@@ -20,7 +20,6 @@ df_to_list = function(df) {
 #' @return lubridate datetime object
 #' @export
 #'
-#' @examples create_datetime(year, month)
 create_datetime = function(year, month) {
   lubridate::ymd(paste(year, month, 1, sep = "-"))
 }
@@ -31,18 +30,17 @@ create_datetime = function(year, month) {
 #' @param df data.frame
 #' @param column column name to inspect
 #'
-#' @return
+#' @return NULL
 #' @export
 #'
-#' @examples df_col_has_value(df, column, expected_type)
 df_col_has_value = function(df, column, expected_type) {
   
   if (is.null(df[[column]]) || length(df[[column]]) == 0 || is.na(df[[column]])) {
-    stop(str_c("provided data frame column", column, "was null, na, or empty", sep = " "))
+    stop(stringr::str_c("provided data frame column", column, "was null, na, or empty", sep = " "))
   }
   
   if (class(df[[column]]) != expected_type) {
-    stop(str_c("provided data frame column did not equal expected class. Provided", 
+    stop(stringr::str_c("provided data frame column did not equal expected class. Provided", 
                class(df[[column]]), "but expected", expected_type, sep = " "))
   }
 }

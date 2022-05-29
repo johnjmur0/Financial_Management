@@ -1,7 +1,8 @@
 .Rhistory
 chromedriver.exe
 
-Config_Files/
+config_files/
+temp_cache/
 *.Rproj*
 
 renv/library/

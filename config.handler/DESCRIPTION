@@ -1,4 +1,4 @@
-Package: Configuration
+Package: config.handler
 Title: Config settings for Financial_Management
 Version: 0.1.0
 Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
