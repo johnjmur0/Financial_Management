@@ -18,9 +18,9 @@ get_historical_by_category = function(user_name = 'jjm',
                                       read_cache = TRUE, 
                                       write_cache = TRUE) {
   
-  config_file = Configuration::get_user_config(user_name)
+  config_file = config.handler::get_user_config(user_name)
   
-  transactions_df = Process_Mint::get_mint_data_by_type_memoised('transactions', read_cache, write_cache) %>%
+  transactions_df = mint.processor::get_mint_data_by_type_memoised('transactions', read_cache, write_cache) %>%
     mutate(date = lubridate::with_tz(date, 'UTC'))
   
   historical_start_date = create_datetime(2018, 1)
@@ -35,7 +35,7 @@ get_historical_by_category = function(user_name = 'jjm',
            day = as.numeric(lubridate::day(date)))
 
   transactions_df %>% 
-    Process_Mint::get_historical_summary(time_vec, config_file, historical_start_date)
+    mint.processor::get_historical_summary(time_vec, config_file, historical_start_date)
 }
 
 #* get currnet account values
@@ -47,7 +47,7 @@ get_current_accounts = function(user_name = 'jjm',
                                 read_cache = FALSE, 
                                 write_cache = FALSE) {
 
-  accounts_df = Process_Mint::get_mint_data_by_type_memoised('accounts', read_cache, write_cache)
+  accounts_df = mint.processor::get_mint_data_by_type_memoised('accounts', read_cache, write_cache)
 
   accounts_df %>% 
     filter(accountSystemStatus == 'ACTIVE') %>% 

@@ -12,14 +12,13 @@ get_historical_summary = function(transactions_df, time_vec, config_file, histor
 #' Create financial projections based on past data and manual adjustments
 #'
 #' @param transactions df of transactions from mint by category
+#' @param account_df df of accounts from mint
+#' @param config_file user config file 
 #' @param historical_start_date start of historical data
 #' @param forecast_date_range date range to forecast
-#' @param config_file user config file 
 #'
-#' @return
 #' @export
 #'
-#' @examples get_projections(transactions, account_df, config_file, forecast_date_range, historical_start_date)
 get_projections = function(transactions, account_df, config_file, forecast_date_range, historical_start_date) {
   
   forecast_time_series = seq(min(forecast_date_range), max(forecast_date_range), by = "month")
@@ -31,7 +30,7 @@ get_projections = function(transactions, account_df, config_file, forecast_date_
     dplyr::filter(between(TimeAdj, min(forecast_date_range), max(forecast_date_range)))
   
   #TODO can also base this off historical
-  annual_investment_growth = Configuration::get_numeric_val_from_config(config_file, 'Average_Investment_Growth')
+  annual_investment_growth = config.handler::get_numeric_val_from_config(config_file, 'Average_Investment_Growth')
   
   fixed_payments = account_df %>% get_fixed_payments(transactions, 
                                                      config_file, 
@@ -46,7 +45,7 @@ get_projections = function(transactions, account_df, config_file, forecast_date_
                                                             forecast_time_series,
                                                             historical_start_date)
   
-  min_monthly_savings = Configuration::get_numeric_val_from_config(config_file, 'Minimum_Monthly_Savings')
+  min_monthly_savings = config.handler::get_numeric_val_from_config(config_file, 'Minimum_Monthly_Savings')
   
   projection_df = projection_inputs %>% create_projection_df(manual_adjustments, 
                                                              category_df, 

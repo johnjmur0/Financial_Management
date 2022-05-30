@@ -2,12 +2,22 @@ Package: mint.processor
 Title: mint.processor
 Version: 0.1.0
 Authors@R: c(person("Jack", "Murphy", email = "johnjmur0@gmail.com", role = c("aut", "cre")))
-Description: Processing and analysis of mint datas for Financial_Management.
+Description: Processing and analysis of mint data for Financial_Management.
 Imports:
+    config.handler,
+    data.table,
     dplyr,
-    utilities,
+    lubridate,
+    jsonlite,
+    memoise,
+    readr,
+    reticulate,
+    stringr,
+    testthat,
+    tidyr,
+    utilities
 Depends: R (>= 3.1.0)
-License: Internal
+License: file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2

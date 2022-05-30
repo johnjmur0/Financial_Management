@@ -4,14 +4,12 @@
 #'
 #' @return dataframe
 #' @export
-#'
-#' @examples get_monthly_summary(transactions)
 #' 
-#' #TODO Hopefully delete this function
+# TODO Hopefully delete this function
 get_monthly_summary = function(transactions) {
   
-  Utilities::df_col_has_value(transactions, "date", "Date")
-  Utilities::df_col_has_value(transactions, "amount", "numeric")
+  utilities::df_col_has_value(transactions, "date", "Date")
+  utilities::df_col_has_value(transactions, "amount", "numeric")
   
   transactions %>% 
     arrange(date) %>%
@@ -57,17 +55,17 @@ get_avg_spend_monthly = function(category_df,
     
     group_by(Year, Month, category) %>% 
     
-    summarise(Total_Spend = sum(Total)) %>% 
+    summarise(Total_Spend = sum(Monthly_Total)) %>% 
     
     ungroup()
   
   spend_df = spend_monthly_df %>% 
   
-    spread(key = category, value = Total_Spend) %>% 
+    tidyr::spread(key = category, value = Total_Spend) %>% 
     
-    mutate_if(is.double, funs(if_else(is.na(.), 0, .))) %>% 
+    mutate_if(is.numeric, ~replace(., is.na(.), 0)) %>% 
     
-    gather(key = category, value = Total_Spend, -Year, -Month)
+    tidyr::gather(key = category, value = Total_Spend, -Year, -Month)
   
   if (return_df) {
     return(spend_df)
@@ -114,23 +112,24 @@ get_avg_income = function(category_df, start_date = NULL) {
     pull()
 }
 
-# '
-#' @param transactions df of mint transactions 
+#' Get transactions grouped by category
+#'
+#' @param transactions df of mint transactions
+#' @param config_file user config file 
 #' @param start_date date to keep transactions after
+#' @param agg_vec vector for group_by columns
 #' @param include_outlier whether to remove outliers as defined in user config
 #'
-#' @return
 #' @export
 #'
-#' @examples
 summarise_categories = function(transactions, config_file, start_date, agg_vec, include_outlier = FALSE) {
   
   lapply(agg_vec, function(val) {
-    Utilities::df_col_has_value(transactions, val, "numeric") 
+    utilities::df_col_has_value(transactions, val, "numeric") 
   })
 
-  Utilities::df_col_has_value(transactions, "category", "character")
-  Utilities::df_col_has_value(transactions, "transaction_type", "character")
+  utilities::df_col_has_value(transactions, "category", "character")
+  utilities::df_col_has_value(transactions, "transaction_type", "character")
     
   #TODO handle outlier categories, plus category + amount combo
   if (!include_outlier) {

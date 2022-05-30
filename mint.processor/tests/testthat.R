@@ -1,5 +1,8 @@
-source("renv/activate.R")
 library(testthat)
-library(Process_Mint)
+library(dplyr)
+library(stringr)
 
-test_check("Process_Mint")
+library(utilities)
+library(mint.processor)
+
+test_check("mint.processor")
