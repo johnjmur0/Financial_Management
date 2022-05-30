@@ -2,10 +2,11 @@
 get_mint_module = function() {
     
     #TODO This always fails first time with rpytools error, but always works second time. Figure out
-    reticulate::import_from_path(path = './mint_getter', module = 'call_mint_API')
+    reticulate::import_from_path(path = './mint_getter/src', module = 'call_mint_API')
 }
 
 get_user_config = function(mint_module, user_name) {
+    print(user_name)
     mint_module[['get_user_config']](user_name)
 }
 
@@ -38,7 +39,7 @@ check_cache = function(file_name) {
     })
 }
 
-get_mint_data_generic = function(file_name, function_name, user_name, read_cache, write_cache) {
+get_mint_data_generic = function(function_name, user_name, read_cache, write_cache) {
 
     if (read_cache) {
 
@@ -50,6 +51,7 @@ get_mint_data_generic = function(file_name, function_name, user_name, read_cache
     }
     
     mint_module = mint_module_memoised()
+    print(mint_module)
     user_config = get_user_config_memoised(mint_module, user_name)
     mint_conn = mint_conn_memoised(mint_module, user_config)
     
@@ -102,4 +104,13 @@ get_mint_data_by_type = function(data_name, user_name, read_cache, write_cache) 
     )
 }
 
+#' Get mint data by type memoised
+#'
+#' @param data_name name of data to get in switch statement 
+#' @param user_name user name for config file 
+#' @param read_cache bool 
+#' @param write_cache bool
+#'
+#' @export
+#'
 get_mint_data_by_type_memoised = memoise::memoise(get_mint_data_by_type)

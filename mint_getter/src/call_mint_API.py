@@ -4,10 +4,10 @@ import pandas as pd
 import mintapi
 import json
 
-def get_config(user_name: str):
+def get_user_config(user_name: str):
 
-    config_dir = os.path('../../config_files')
-    config_file = os.path.join(config_dir, + user_name + '_config_.json')
+    config_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config_files')
+    config_file = os.path.join(config_dir, user_name + '_config.json')
 
     json_file = ''
     try:
@@ -26,7 +26,7 @@ def get_mint_conn(user_config: dict):
         user_config['mint_login']['password'],
         mfa_method='soft-token',
         mfa_token = user_config['mint_login']['mfa_token'],
-        headless=False)
+        headless=True)
 
 def close_mint_conn(mint_conn):
     mint_conn.close()

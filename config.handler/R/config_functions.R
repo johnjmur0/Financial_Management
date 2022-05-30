@@ -8,7 +8,7 @@
 #' @export
 #'
 get_user_config = function(user_name) {
-  config_path = file.path('./Config_Files', str_c('config_', user_name, '.json'))
+  config_path = file.path('./config_files', str_c(user_name, '_config.json'))
   config_file = rjson::fromJSON(file = config_path)
 }
   

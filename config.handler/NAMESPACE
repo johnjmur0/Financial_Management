@@ -2,6 +2,7 @@
 
 export(get_account_df)
 export(get_numeric_val_from_config)
+export(get_user_config)
 import(dplyr)
 import(rjson)
 import(stringr)

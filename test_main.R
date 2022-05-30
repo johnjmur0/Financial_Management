@@ -1,9 +1,6 @@
 library(tidyverse)
 library(plumber)
 library(reticulate)
-devtools::load_all('./config.handler')
-devtools::load_all('./mint.processor')
-devtools::load_all('./utilities')
 
 #pr('./test_main.R') %>% pr_run(port=8000)
 
@@ -20,7 +17,11 @@ get_historical_by_category = function(user_name = 'jjm',
   
   config_file = config.handler::get_user_config(user_name)
   
-  transactions_df = mint.processor::get_mint_data_by_type_memoised('transactions', read_cache, write_cache) %>%
+  transactions_df = mint.processor::get_mint_data_by_type_memoised('transactions', 
+                                                                   user_name, 
+                                                                   read_cache, 
+                                                                   write_cache) %>%
+
     mutate(date = lubridate::with_tz(date, 'UTC'))
   
   historical_start_date = create_datetime(2018, 1)
@@ -47,7 +48,7 @@ get_current_accounts = function(user_name = 'jjm',
                                 read_cache = FALSE, 
                                 write_cache = FALSE) {
 
-  accounts_df = mint.processor::get_mint_data_by_type_memoised('accounts', read_cache, write_cache)
+  accounts_df = mint.processor::get_mint_data_by_type_memoised('accounts', user_name, read_cache, write_cache)
 
   accounts_df %>% 
     filter(accountSystemStatus == 'ACTIVE') %>% 
