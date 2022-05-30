@@ -1,9 +1,9 @@
 library(tidyverse)
 library(plumber)
 library(reticulate)
-devtools::load_all('./Configuration')
-devtools::load_all('./Process_Mint')
-devtools::load_all('./Utilities')
+devtools::load_all('./config.handler')
+devtools::load_all('./mint.processor')
+devtools::load_all('./utilities')
 
 #pr('./test_main.R') %>% pr_run(port=8000)
 

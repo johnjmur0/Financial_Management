@@ -3,6 +3,7 @@ chromedriver.exe
 
 config_files/
 temp_cache/
+.vscode/
 *.Rproj*
 
 renv/library/

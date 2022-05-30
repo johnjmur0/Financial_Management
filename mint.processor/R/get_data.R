@@ -2,12 +2,16 @@
 get_mint_module = function() {
     
     #TODO This always fails first time with rpytools error, but always works second time. Figure out
-    reticulate::import_from_path(path = './Get_Mint', module = 'call_mint_API')
+    reticulate::import_from_path(path = './mint_getter', module = 'call_mint_API')
 }
 
-get_mint_connection = function(mint_module) {
+get_user_config = function(mint_module, user_name) {
+    mint_module[['get_user_config']](user_name)
+}
 
-    mint_module[['get_mint_conn']]()
+get_mint_connection = function(mint_module, user_config) {
+
+    mint_module[['get_mint_conn']](user_config)
 }
 
 close_mint_connection = function() {
@@ -19,6 +23,7 @@ close_mint_connection = function() {
 
 mint_module_memoised = memoise::memoise(get_mint_module)
 mint_conn_memoised = memoise::memoise(get_mint_connection)
+get_user_config_memoised = memoise::memoise(get_user_config)
 
 check_cache = function(file_name) {
 
@@ -33,7 +38,7 @@ check_cache = function(file_name) {
     })
 }
 
-get_mint_data_generic = function(file_name, function_name, read_cache, write_cache) {
+get_mint_data_generic = function(file_name, function_name, user_name, read_cache, write_cache) {
 
     if (read_cache) {
 
@@ -45,53 +50,52 @@ get_mint_data_generic = function(file_name, function_name, read_cache, write_cac
     }
     
     mint_module = mint_module_memoised()
-    mint_conn = mint_conn_memoised(mint_module)
+    user_config = get_user_config_memoised(mint_module, user_name)
+    mint_conn = mint_conn_memoised(mint_module, user_config)
     
     ret_df = mint_module[[function_name]](mint_conn) %>% as_tibble()
 
     if (write_cache) {
+        file_name = stringr::str_c(stringr::str_remove(function_name, 'get_'), '.csv')
         ret_df %>% write_csv(file.path('./temp_cache', file_name))
     }
 
     return(ret_df)
 }
 
-get_mint_transactions = function(read_cache = FALSE, write_cache = FALSE) {
+get_mint_transactions = function(user_name, read_cache = FALSE, write_cache = FALSE) {
     
-    file_name = 'transactions_df.csv'
-    fun_name = 'get_transactions_df'
+    func_name = 'get_transactions_df'
 
-    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
+    return(get_mint_data_generic(func_name, user_name, read_cache, write_cache))
 }
 
-get_mint_accounts = function(read_cache = FALSE, write_cache = FALSE) {
+get_mint_accounts = function(user_name, read_cache = FALSE, write_cache = FALSE) {
 
-    file_name = 'accounts_df.csv'
-    fun_name = 'get_account_df'
+    func_name = 'get_accounts_df'
 
-    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
+    return(get_mint_data_generic(func_name, user_name, read_cache, write_cache))
 }
 
-get_mint_investments = function(read_cache = FALSE, write_cache = FALSE) {
+get_mint_investments = function(user_name, read_cache = FALSE, write_cache = FALSE) {
 
-    file_name = 'investments_df.csv'
-    fun_name = 'get_investments_df'
+    func_name = 'get_investments_df'
 
-    return(get_mint_data_generic(file_name, fun_name, read_cache, write_cache))
+    return(get_mint_data_generic(func_name, user_name, read_cache, write_cache))
 }
 
-get_mint_data_by_type = function(data_name, read_cache, write_cache) {
+get_mint_data_by_type = function(data_name, user_name, read_cache, write_cache) {
 
     switch(data_name,
 
         transactions = {
-            return(get_mint_transactions(read_cache, write_cache))
+            return(get_mint_transactions(user_name, read_cache, write_cache))
         },
         accounts = {
-            return(get_mint_accounts(read_cache, write_cache)) 
+            return(get_mint_accounts(user_name, read_cache, write_cache)) 
         },
         investments = {
-            return(get_mint_investments(read_cache, write_cache))
+            return(get_mint_investments(user_name, read_cache, write_cache))
         },
         
         stop(str_c('Provided data_name', data_name, 'not supported.', sep = ' '))

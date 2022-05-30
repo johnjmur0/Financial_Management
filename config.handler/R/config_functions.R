@@ -5,6 +5,7 @@
 #' @return list
 #' @import rjson 
 #' @import stringr
+#' @export
 #'
 get_user_config = function(user_name) {
   config_path = file.path('./Config_Files', str_c('config_', user_name, '.json'))
