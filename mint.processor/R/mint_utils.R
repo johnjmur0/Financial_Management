@@ -90,3 +90,75 @@ aggregate_categories_big = function(agg_spend_df, time_vec) {
   
   meta_category_vec %>% aggregate_categories(agg_spend_df, 'total', time_vec)
 }
+
+clean_transactions_df = function(transactions_df) {
+
+  transactions_df %>% 
+
+    mutate(date = lubridate::with_tz(date, 'UTC')) %>%
+  
+    filter(date <= Sys.time()) %>%
+    
+    mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
+           year = lubridate::year(date),
+           month = lubridate::month(date),
+           day = as.numeric(lubridate::day(date)))
+}
+
+clean_accounts_df = function(accounts_df) {
+
+  accounts_df %>% 
+    
+    filter(accountSystemStatus == 'ACTIVE') %>% 
+    
+    mutate(value = unlist(value)) %>% 
+    
+    group_by(accountType) %>% 
+    
+    summarise(total = sum(value)) %>%
+    
+    rename(account_type = accountType) %>% 
+    
+    select(account_type, total)
+}
+
+summarise_categories = function(transactions_df, config_list, start_date, agg_vec, include_outlier = FALSE) {
+  
+  lapply(agg_vec, function(val) {
+    utilities::df_col_has_value(transactions_df, val, "numeric") 
+  })
+
+  utilities::df_col_has_value(transactions_df, "category", "character")
+  utilities::df_col_has_value(transactions_df, "transaction_type", "character")
+    
+  #TODO handle outlier categories, plus category + amount combo
+  if (!include_outlier) {
+    
+      transactions_df = lapply(config_list[["outlier_months"]], function(outlier, transactions_df) {
+      
+        exclude_month = lubridate::ymd(str_c(outlier[["year"]], outlier[["month"]], 1, sep = "-"))
+        transactions_df %>% 
+        mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-"))) %>%
+        filter(Year_Month != exclude_month)
+      
+      },
+      transactions_df = transactions_df) %>% 
+      bind_rows() %>% 
+      distinct()
+  }
+
+  #TODO handle these categories in config
+  ignore_categories = config_list[['transactions_params']][['ignore_categories']]
+  
+  categories = transactions_df %>% 
+  
+    filter(date >= start_date & !(category %in% one_time_categories)) %>%
+    
+    group_by(!!!syms(agg_vec), category, transaction_type) %>% 
+    
+    summarise(total = sum(amount)) %>%
+    
+    filter(total != 0) %>% 
+    
+    ungroup()
+}

@@ -41,6 +41,8 @@ check_cache = function(file_name) {
 
 get_mint_data_generic = function(function_name, user_name, read_cache, write_cache) {
 
+    file_name = stringr::str_c(stringr::str_remove(function_name, 'get_'), '.csv')
+    
     if (read_cache) {
 
         cache_df = check_cache(file_name)
@@ -58,7 +60,6 @@ get_mint_data_generic = function(function_name, user_name, read_cache, write_cac
     ret_df = mint_module[[function_name]](mint_conn) %>% as_tibble()
 
     if (write_cache) {
-        file_name = stringr::str_c(stringr::str_remove(function_name, 'get_'), '.csv')
         ret_df %>% write_csv(file.path('./temp_cache', file_name))
     }
 

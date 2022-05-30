@@ -15,28 +15,17 @@ get_historical_by_category = function(user_name = 'jjm',
                                       read_cache = TRUE, 
                                       write_cache = TRUE) {
   
-  config_file = config.handler::get_user_config(user_name)
+  config_list = config.handler::get_user_config(user_name)
   
   transactions_df = mint.processor::get_mint_data_by_type_memoised('transactions', 
                                                                    user_name, 
                                                                    read_cache, 
-                                                                   write_cache) %>%
-
-    mutate(date = lubridate::with_tz(date, 'UTC'))
+                                                                   write_cache)
   
-  historical_start_date = create_datetime(2018, 1)
-
-  transactions_df = transactions_df %>% 
-
-    filter(date <= Sys.time()) %>%
-    
-    mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
-           year = lubridate::year(date),
-           month = lubridate::month(date),
-           day = as.numeric(lubridate::day(date)))
+  historical_start_date = utilities::create_datetime(2018, 1)
 
   transactions_df %>% 
-    mint.processor::get_historical_summary(time_vec, config_file, historical_start_date)
+    mint.processor::summarize_transactions(time_vec, config_list, historical_start_date)
 }
 
 #* get currnet account values
@@ -50,9 +39,24 @@ get_current_accounts = function(user_name = 'jjm',
 
   accounts_df = mint.processor::get_mint_data_by_type_memoised('accounts', user_name, read_cache, write_cache)
 
-  accounts_df %>% 
-    filter(accountSystemStatus == 'ACTIVE') %>% 
-    mutate(value = unlist(value)) %>% 
-    group_by(accountType) %>% 
-    summarise(Total = sum(value))  
+  accounts_df %>% clean_accounts_df()
+}
+
+get_current_projection = function(user_name = 'jjm', 
+                                  time_vec = c('year', 'month'), 
+                                  forecast_end_year = 2025,
+                                  read_cache = TRUE, 
+                                  write_cache = TRUE) {
+
+  config_list = config.handler::get_user_config(user_name)
+  
+  historical_transactions_df = get_historical_by_category(user_name, time_vec, read_cache, write_cache) 
+  
+  accounts_df = get_current_accounts(user_name, read_cache, write_cache)
+
+  forecast_date_range = c(
+    lubridate::mdy(stringr::str_c(lubridate::month(Sys.time()) + 1, 1, lubridate::year(Sys.time()), sep = '/')), 
+    lubridate::mdy(stringr::str_c(12, 1, forecast_end_year, sep = '/')))
+
+  projection_df = get_current_projections(transactions_df, accounts_df, config_list, forecast_date_range)
 }
