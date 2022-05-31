@@ -1,5 +1,4 @@
-library(tidyverse)
-library(plumber)
+library(dplyr)
 library(reticulate)
 
 #pr('./test_main.R') %>% pr_run(port=8000)
@@ -28,7 +27,7 @@ get_historical_by_category = function(user_name = 'jjm',
     mint.processor::summarize_transactions(time_vec, config_list, historical_start_date)
 }
 
-#* get currnet account values
+#* get current account values
 #* @param user_name key for config file to us
 #* @param read_cache whether to read accounts from cache if possible
 #* @param write_cache whether to overwrite transactions in cache if not reading
@@ -39,14 +38,19 @@ get_current_accounts = function(user_name = 'jjm',
 
   accounts_df = mint.processor::get_mint_data_by_type_memoised('accounts', user_name, read_cache, write_cache)
 
-  accounts_df %>% clean_accounts_df()
+  accounts_df %>% mint.processor::clean_accounts_df()
 }
 
-get_current_projection = function(user_name = 'jjm', 
+#* get current monthly account projection 
+#* @param user_name key for config file to us
+#* @param forecast_end_year last full year to be forecasted
+#* @param read_cache whether to read accounts from cache if possible
+#* @param write_cache whether to overwrite transactions in cache if not reading
+#* @post /get_current_projections
+get_current_projections = function(user_name = 'jjm', 
                                   time_vec = c('year', 'month'), 
                                   forecast_end_year = 2025,
-                                  read_cache = TRUE, 
-                                  write_cache = TRUE) {
+                                  read_cache = TRUE) {
 
   config_list = config.handler::get_user_config(user_name)
   
@@ -58,5 +62,9 @@ get_current_projection = function(user_name = 'jjm',
     lubridate::mdy(stringr::str_c(lubridate::month(Sys.time()) + 1, 1, lubridate::year(Sys.time()), sep = '/')), 
     lubridate::mdy(stringr::str_c(12, 1, forecast_end_year, sep = '/')))
 
-  projection_df = get_current_projections(transactions_df, accounts_df, config_list, forecast_date_range)
+  mint.processor::get_current_projections(
+    historical_transactions_df, 
+    accounts_df, 
+    config_list, 
+    forecast_date_range)
 }

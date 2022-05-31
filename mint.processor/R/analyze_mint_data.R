@@ -2,24 +2,33 @@
 #'
 #' @param transactions_df raw transactions
 #' @param time_vec vector to aggregate by
-#' @param config_file user config file 
+#' @param config_list user config list 
 #' @param historical_start_date drop before this date
 #'
 #' @export
 #'
-summarize_transactions = function(transactions_df, time_vec, config_file, historical_start_date) {
+summarize_transactions = function(transactions_df, time_vec, config_list, historical_start_date) {
 
   transactions_df %>% 
 
     clean_transactions_df() %>%
     
-    summarise_categories(config_file, historical_start_date, time_vec, include_outlier = TRUE) %>%
+    summarise_categories(config_list, historical_start_date, time_vec, include_outlier = TRUE) %>%
   
     aggregate_categories_small(time_vec) %>%
   
     aggregate_categories_big(time_vec)
 }
 
+#' Get current financial account projections
+#'
+#' @param historical_transactions_df aggregated and cleaned transactions
+#' @param accounts_df aggregated and cleaned accounts
+#' @param config_list user config data
+#' @param forecast_date_range tuple of start and end date
+#'
+#' @export
+#'
 get_current_projections = function(historical_transactions_df, accounts_df, config_list, forecast_date_range) {
 
   projection_df = tibble('timestamp' = seq(min(forecast_date_range), max(forecast_date_range), by = "month"))

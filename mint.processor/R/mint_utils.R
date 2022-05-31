@@ -4,8 +4,8 @@ aggregate_categories = function(category_vec, spend_df, col_name, time_vec)  {
     
     category_definition = category_val %>% pull() %>% tolower()
     
-    spend_df %>% 
-      filter(category %in% category_definition) %>% 
+    agg_category = spend_df %>% 
+      filter(tolower(category) %in% category_definition) %>% 
       group_by(!!!syms(time_vec)) %>% 
       summarise(total := sum(!!sym(col_name))) %>% 
       mutate(category = category_val %>% colnames())
@@ -67,7 +67,7 @@ aggregate_categories_small = function(category_df, time_vec) {
                        rent, drinking, bills_fees, groceries, shopping, taxes_insurance,
                        ignore, misc_income, paycheck, loans, bonus)
   
-  all_categories %>% aggregate_categories(category_df, 'total', time_vec)
+  all_categories %>% mint.processor:::aggregate_categories(category_df, 'total', time_vec)
 }
 
 aggregate_categories_big = function(agg_spend_df, time_vec) {
@@ -91,35 +91,55 @@ aggregate_categories_big = function(agg_spend_df, time_vec) {
   meta_category_vec %>% aggregate_categories(agg_spend_df, 'total', time_vec)
 }
 
+#' clean raw transactions df
+#'
+#' @param transactions_df raw mint transactions df
+#'
+#' @export
+#'
 clean_transactions_df = function(transactions_df) {
 
   transactions_df %>% 
+
+    tidyr::unnest_wider(category) %>%
 
     mutate(date = lubridate::with_tz(date, 'UTC')) %>%
   
     filter(date <= Sys.time()) %>%
     
-    mutate(amount = if_else(transaction_type == 'debit', amount * -1, amount),
+    mutate(amount = unlist(amount),
            year = lubridate::year(date),
            month = lubridate::month(date),
-           day = as.numeric(lubridate::day(date)))
+           day = as.numeric(lubridate::day(date))) %>%
+
+    rename(category = name)
 }
 
+#' clean raw accounts df
+#'
+#' @param accounts_df raw mint accounts df
+#'
+#' @export
+#'
 clean_accounts_df = function(accounts_df) {
 
   accounts_df %>% 
     
-    filter(accountSystemStatus == 'ACTIVE') %>% 
+    filter(systemStatus == 'ACTIVE') %>% 
     
-    mutate(value = unlist(value)) %>% 
+    mutate(currentBalance = unlist(currentBalance)) %>% 
     
-    group_by(accountType) %>% 
+    group_by(type) %>% 
     
-    summarise(total = sum(value)) %>%
+    summarise(total = sum(currentBalance)) %>%
     
-    rename(account_type = accountType) %>% 
+    rename(account_type = type) %>% 
     
-    select(account_type, total)
+    select(account_type, total) %>%
+
+    mutate(account_type = case_when(account_type == 'BankAccount' ~ 'bank',
+                                    account_type == 'InvestmentAccount' ~ 'investment',
+                                    TRUE ~ account_type))
 }
 
 summarise_categories = function(transactions_df, config_list, start_date, agg_vec, include_outlier = FALSE) {
@@ -129,7 +149,7 @@ summarise_categories = function(transactions_df, config_list, start_date, agg_ve
   })
 
   utilities::df_col_has_value(transactions_df, "category", "character")
-  utilities::df_col_has_value(transactions_df, "transaction_type", "character")
+  utilities::df_col_has_value(transactions_df, "amount", "numeric")
     
   #TODO handle outlier categories, plus category + amount combo
   if (!include_outlier) {
@@ -150,11 +170,11 @@ summarise_categories = function(transactions_df, config_list, start_date, agg_ve
   #TODO handle these categories in config
   ignore_categories = config_list[['transactions_params']][['ignore_categories']]
   
-  categories = transactions_df %>% 
+  transactions_df %>% 
   
-    filter(date >= start_date & !(category %in% one_time_categories)) %>%
+    filter(date >= start_date & !(category %in% ignore_categories)) %>%
     
-    group_by(!!!syms(agg_vec), category, transaction_type) %>% 
+    group_by(!!!syms(agg_vec), category) %>% 
     
     summarise(total = sum(amount)) %>%
     

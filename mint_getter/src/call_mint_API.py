@@ -33,30 +33,32 @@ def close_mint_conn(mint_conn):
 
 def get_accounts_df(mint_conn):
     
-    accounts = mint_conn.get_accounts()
+    accounts = mint_conn.get_account_data()
 
     account_df = pd.DataFrame()
 
     for account in accounts:
         account_df = pd.concat([account_df, pd.DataFrame.from_dict(account, orient = "index").T])
     
-    account_df = account_df[['accountName', 'accountType', 'accountSystemStatus', 'value', 'interestRate']].reset_index(drop=True)
+    account_df = account_df[['name', 'type', 'systemStatus', 'currentBalance', 'availableBalance']].reset_index(drop=True)
     return account_df
 
 def get_transactions_df(mint_conn):
     
-    transactions = mint_conn.get_transactions()
-    return transactions
+    transactions = mint_conn.get_transaction_data()
+
+    transactions_df = pd.DataFrame()
+
+    for transaction in transactions:
+        transactions_df = pd.concat([transactions_df, pd.DataFrame.from_dict(transaction, orient = "index").T])
+
+    ret_cols = ['date', 'description', 'amount', 'type', 'category', 'accountId']
+    transactions_df = transactions_df[ret_cols].reset_index(drop=True)
+    return transactions_df
 
 def get_investments_df(mint_conn):
     
-    investments = mint_conn.get_invests_json()
+    investments = mint_conn.get_investment_data()
 
     investment_obj = json.loads(investments) 
     return pd.DataFrame.from_dict(investment_obj)
-
-if __name__ == "__main__":
-
-    user_config = get_config('jjm')
-    mint_conn = get_mint_conn(user_config)
-    get_accounts_df(mint_conn)

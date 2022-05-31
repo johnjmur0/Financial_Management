@@ -30,12 +30,12 @@ check_cache = function(file_name) {
 
     result = tryCatch({
             
-        return(read_csv(file.path('./temp_cache', file_name)))
+        return(readr::read_csv(file.path('./temp_cache', file_name)))
         
     }, error = function(e) {
         
         print('Reading from cache failed, reading from mint.')
-        return(tibble())      
+        return(dplyr::tibble())      
     })
 }
 
@@ -60,7 +60,7 @@ get_mint_data_generic = function(function_name, user_name, read_cache, write_cac
     ret_df = mint_module[[function_name]](mint_conn) %>% as_tibble()
 
     if (write_cache) {
-        ret_df %>% write_csv(file.path('./temp_cache', file_name))
+        ret_df %>% readr::write_csv(file.path('./temp_cache', file_name))
     }
 
     return(ret_df)
