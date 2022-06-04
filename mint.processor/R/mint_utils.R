@@ -68,7 +68,7 @@ clean_accounts_df = function(accounts_df) {
                                     TRUE ~ account_type))
 }
 
-summarise_categories = function(transactions_df, config_list, start_date, agg_vec, include_outlier = FALSE) {
+summarise_categories = function(transactions_df, config_list, start_date, agg_vec, include_outlier = TRUE) {
   
   lapply(agg_vec, function(val) {
     utilities::df_col_has_value(transactions_df, val, "numeric") 
@@ -94,7 +94,7 @@ summarise_categories = function(transactions_df, config_list, start_date, agg_ve
   }
 
   ignore_categories = config_list[['transactions_params']][['ignore_categories']]
-  
+    
   transactions_df %>% 
   
     filter(date >= start_date & !(category %in% ignore_categories)) %>%

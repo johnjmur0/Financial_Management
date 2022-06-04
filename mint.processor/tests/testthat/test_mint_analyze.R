@@ -1,6 +1,6 @@
 testthat::context('test main mint functions')
 
-test_agg_transactions_df = tibble(
+test_agg_transactions_df = tibble::tibble(
     'year' = c(2022, 2022, 2022, 2022),
     'month' = c(1, 1, 2, 2),
     'day' = c(3, 4, 3, 4),

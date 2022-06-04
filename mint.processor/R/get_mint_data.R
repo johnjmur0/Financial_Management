@@ -1,8 +1,9 @@
 #TODO It'd be nice to have this be a class, cut down on dupe code
 get_mint_module = function() {
     
+    dir = here::here()
     #TODO This always fails first time with rpytools error, but always works second time. Figure out
-    reticulate::import_from_path(path = './mint_getter/src', module = 'call_mint_API')
+    reticulate::import_from_path(path = file.path(dirname(dir), 'mint_getter/src'), module = 'call_mint_API')
 }
 
 get_user_config = function(mint_module, user_name) {

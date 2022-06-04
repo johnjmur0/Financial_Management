@@ -11,8 +11,8 @@ library(reticulate)
 #* @post /get_historical_by_category
 get_historical_by_category = function(user_name = 'jjm', 
                                       time_vec = c('year', 'month', 'day'), 
-                                      read_cache = TRUE, 
-                                      write_cache = TRUE) {
+                                      read_cache = FALSE, 
+                                      write_cache = FALSE) {
   
   config_list = utilities::get_user_config(user_name)
   
