@@ -24,14 +24,14 @@ test_that('test aggregate_categories', {
     expect_equal(agg_df %>% colnames(), c(time_vec, sum_col, 'category'))
 
     expect_equal(agg_df[['category']] %>% unique(), c('first', 'second'))
-    expect_equal(agg_df %>% filter(category == 'first') %>% pull(total) %>% sum(), 3)
-    expect_equal(agg_df %>% filter(category == 'second' & day == 2) %>% pull(total) %>% sum(), 7)
+    expect_equal(agg_df %>% dplyr::filter(category == 'first') %>% pull(total) %>% sum(), 3)
+    expect_equal(agg_df %>% dplyr::filter(category == 'second' & day == 2) %>% pull(total) %>% sum(), 7)
 })
 
 test_that('test clean_transactions_df', {
 
     test_raw_transactions = tibble::tibble(
-        'date' = c('2022-01-01', '2022-01-02', '2022-01-03'),
+        'date' = c(lubridate::ymd('2022-01-01'), lubridate::ymd('2022-01-02'), lubridate::ymd('2022-01-03')),
         'description' = c('foo', 'foo', 'bar'),
         'amount' = list(c(10), c(-20), c(30)),
         'type' = c('CashAndCreditTransaction', 'CashAndCreditTransaction', 'CashAndCreditTransaction'),
@@ -65,7 +65,7 @@ test_that('test clean_accounts_df', {
 
     expect_equal(clean_accounts_df['account_type'] %>% distinct() %>% pull(), c('bank', 'investment'))
     expect_equal(clean_accounts_df['total'] %>% sum(), 150)
-    expect_equal(clean_accounts_df %>% filter(account_type == 'bank') %>% select(total) %>% pull(), 100)
+    expect_equal(clean_accounts_df %>% dplyr::filter(account_type == 'bank') %>% select(total) %>% pull(), 100)
 })
 
 
@@ -90,6 +90,6 @@ test_that('test summarise_categories with outlier', {
     expected_cols = c('year', 'month', 'day', 'total', 'category')
     expect_equal(summed_transactions %>% nrow(), 2)
     expect_equal(summed_transactions %>% colnames() %>% sort(), expected_cols %>% sort())
-    expect_equal(summed_transactions %>% filter(category == 'A') %>% pull(total), -10)
-    expect_equal(summed_transactions %>% filter(category == 'B') %>% pull(total), 30)
+    expect_equal(summed_transactions %>% dplyr::filter(category == 'A') %>% pull(total), -10)
+    expect_equal(summed_transactions %>% dplyr::filter(category == 'B') %>% pull(total), 30)
 })

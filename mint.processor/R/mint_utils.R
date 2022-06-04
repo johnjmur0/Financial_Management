@@ -6,7 +6,7 @@ aggregate_categories = function(spend_df, category_list, col_name, time_vec)  {
     category_definition = category_list[i][[1]] %>% tolower()
 
     spend_df %>% 
-      filter(tolower(category) %in% category_definition) %>% 
+      dplyr::filter(tolower(category) %in% category_definition) %>% 
       group_by(!!!syms(time_vec)) %>% 
       summarise(total := sum(!!sym(col_name))) %>% 
       mutate(category = category_name)
@@ -31,7 +31,7 @@ clean_transactions_df = function(transactions_df) {
 
     mutate(date = lubridate::with_tz(date, 'UTC')) %>%
   
-    filter(date <= Sys.time()) %>%
+    dplyr::filter(date <= Sys.time()) %>%
     
     mutate(amount = unlist(amount),
            year = lubridate::year(date),
@@ -51,7 +51,7 @@ clean_accounts_df = function(accounts_df) {
 
   accounts_df %>% 
     
-    filter(systemStatus == 'ACTIVE') %>% 
+    dplyr::filter(systemStatus == 'ACTIVE') %>% 
     
     mutate(currentBalance = unlist(currentBalance)) %>% 
     
@@ -85,7 +85,7 @@ summarise_categories = function(transactions_df, config_list, start_date, agg_ve
         exclude_month = lubridate::ymd(str_c(outlier[["year"]], outlier[["month"]], 1, sep = "-"))
         transactions_df %>% 
         mutate(Year_Month = lubridate::ymd(str_c(Year, Month, 1, sep = "-"))) %>%
-        filter(Year_Month != exclude_month)
+        dplyr::filter(Year_Month != exclude_month)
       
       },
       transactions_df = transactions_df) %>% 
@@ -97,13 +97,13 @@ summarise_categories = function(transactions_df, config_list, start_date, agg_ve
     
   transactions_df %>% 
   
-    filter(date >= start_date & !(category %in% ignore_categories)) %>%
+    dplyr::filter(date >= start_date & !(category %in% ignore_categories)) %>%
     
     group_by(!!!syms(agg_vec), category) %>% 
     
     summarise(total = sum(amount)) %>%
     
-    filter(total != 0) %>% 
+    dplyr::filter(total != 0) %>% 
     
     ungroup()
 }
