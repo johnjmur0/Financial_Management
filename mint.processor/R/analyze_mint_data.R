@@ -8,16 +8,15 @@
 #' @export
 #'
 summarize_transactions = function(transactions_df, time_vec, config_list, historical_start_date) {
-
+  
   transactions_df %>% 
 
     clean_transactions_df() %>%
     
     summarise_categories(config_list, historical_start_date, time_vec, include_outlier = TRUE) %>%
   
-    aggregate_categories_small(time_vec) %>%
-  
-    aggregate_categories_big(time_vec)
+    aggregate_categories(config_list[['aggregate_categories']], 'total', time_vec) %>%
+    aggregate_categories(config_list[['meta_categories']], 'total', time_vec)
 }
 
 #' Get current financial account projections

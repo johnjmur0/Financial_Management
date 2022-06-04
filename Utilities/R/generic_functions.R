@@ -1,3 +1,20 @@
+#' Lapply but re-attach named list entries
+#'
+#' @param list list
+#' @param fun function
+#'
+#' @import dplyr
+#' @export
+#'
+lapply_preserve_names = function(list, fun) {
+  
+  lapply(seq_along(list), function(i) {
+    obj = list[i]
+    names(obj) = names(list)[i]
+    fun(obj)
+  })
+}
+
 #' split dataframe row wise for iteration
 #'
 #' @param df data.frame or tibble

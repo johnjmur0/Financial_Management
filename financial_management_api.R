@@ -14,7 +14,7 @@ get_historical_by_category = function(user_name = 'jjm',
                                       read_cache = TRUE, 
                                       write_cache = TRUE) {
   
-  config_list = config.handler::get_user_config(user_name)
+  config_list = utilities::get_user_config(user_name)
   
   transactions_df = mint.processor::get_mint_data_by_type_memoised('transactions', 
                                                                    user_name, 
@@ -52,7 +52,7 @@ get_current_projections = function(user_name = 'jjm',
                                   forecast_end_year = 2025,
                                   read_cache = TRUE) {
 
-  config_list = config.handler::get_user_config(user_name)
+  config_list = utilities::get_user_config(user_name)
   
   historical_transactions_df = get_historical_by_category(user_name, time_vec, read_cache, write_cache) 
   
