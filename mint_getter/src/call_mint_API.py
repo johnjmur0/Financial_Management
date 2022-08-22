@@ -6,6 +6,7 @@ import json
 
 def get_user_config(user_name: str):
 
+    # TODO find cleaner way to do this
     config_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'config_files')
     config_file = os.path.join(config_dir, user_name + '_config.json')
 
@@ -40,7 +41,8 @@ def get_accounts_df(mint_conn):
     for account in accounts:
         account_df = pd.concat([account_df, pd.DataFrame.from_dict(account, orient = "index").T])
     
-    account_df = account_df[['name', 'type', 'systemStatus', 'currentBalance', 'availableBalance']].reset_index(drop=True)
+    ret_cols = ['name', 'type', 'systemStatus', 'currentBalance', 'availableBalance']
+    account_df = account_df[ret_cols].reset_index(drop=True)
     return account_df
 
 def get_transactions_df(mint_conn):
