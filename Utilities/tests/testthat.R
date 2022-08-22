@@ -1,4 +1,4 @@
 library(testthat)
-library(Process_Mint)
+library(utilities)
 
-test_check("Process_Mint")
+test_check("utilities")
