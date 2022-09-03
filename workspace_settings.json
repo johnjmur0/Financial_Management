@@ -1,0 +1,29 @@
+{
+    "notebook.cellToolbarLocation": {
+        "default": "right",
+        "jupyter-notebook": "left"
+    },
+    "workbench.editorAssociations": {
+        "*.ipynb": "jupyter-notebook"
+    },
+
+    "python.testing.unittestArgs": [
+        "--v",
+        "--s",
+        "--p",
+        "test_*.py"
+    ],
+    "python.testing.pytestEnabled": false,
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": true, 
+
+    "security.workspace.trust.untrustedFiles": "open",
+
+    "explorer.confirmDragAndDrop": false,
+    "r.bracketedPaste": true,
+    "r.alwaysUseActiveTerminal": true,
+    "RTestAdapter.RscriptPath": "C:\\Program Files\\R\\R-4.0.5\\bin\\x64\\Rscript.exe",
+    "testExplorer.useNativeTesting": true,
+    "explorer.confirmDelete": false,
+    "terminal.integrated.enableMultiLinePasteWarning": false
+}
