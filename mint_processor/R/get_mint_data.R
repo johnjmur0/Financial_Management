@@ -50,9 +50,9 @@ get_mint_data_generic <- function(function_name, user_name, read_cache, write_ca
     mint_module <- mint_module_memoised()
     print(mint_module)
     user_config <- get_user_config_memoised(mint_module, user_name)
-    mint_conn <- mint_conn_memoised(mint_module, user_config)
+    mint_conn <- suppressMessages(mint_conn_memoised(mint_module, user_config))
 
-    ret_df <- mint_module[[function_name]](mint_conn) %>% as_tibble()
+    ret_df <- suppressMessages(mint_module[[function_name]](mint_conn)) %>% as_tibble()
 
     if (write_cache) {
         ret_df %>% readr::write_csv(file.path("./temp_cache", file_name))

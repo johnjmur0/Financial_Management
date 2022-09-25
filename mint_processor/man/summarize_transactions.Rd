@@ -7,7 +7,7 @@
 summarize_transactions(
   transactions_df,
   time_vec,
-  config_file,
+  config_list,
   historical_start_date
 )
 }
@@ -16,7 +16,7 @@ summarize_transactions(
 
 \item{time_vec}{vector to aggregate by}
 
-\item{config_file}{user config file}
+\item{config_list}{user config list}
 
 \item{historical_start_date}{drop before this date}
 }
