@@ -2,6 +2,6 @@
 
 export(clean_accounts_df)
 export(clean_transactions_df)
-export(get_current_projections)
+export(create_projections_df)
 export(get_mint_data_by_type_memoised)
 export(summarize_transactions)
