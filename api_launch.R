@@ -1,5 +1,6 @@
 # setwd("C:/source/financial-management")
-
 # source("./.Rprofile")
 
-plumber::pr("./financial_management_api.R") %>% plumber::pr_run(port = 8000)
+source("renv/activate.R")
+
+plumber::pr_run(plumber::pr("./financial_management_api.R"), port = 8000)
