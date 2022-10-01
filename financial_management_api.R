@@ -1,5 +1,7 @@
 library(dplyr)
 library(reticulate)
+library(utilities)
+library(mint.processor)
 
 # Command to manually launch api
 # pr('./financial_management_api.R') %>% pr_run(port=8000)
@@ -55,9 +57,8 @@ get_current_projections <- function(user_name,
                                     historical_start_year,
                                     forecast_end_year,
                                     time_vec = c("year", "month"),
-                                    read_cache = TRUE,
+                                    read_cache = FALSE,
                                     write_cache = TRUE) {
-  
   config_list <- utilities::get_user_config(user_name)
 
   historical_transactions_df <- get_historical_by_category(
