@@ -1,10 +1,7 @@
-library(dplyr)
-library(reticulate)
+# library(dplyr)
+# library(reticulate)
 library(utilities)
 library(mint.processor)
-
-# Command to manually launch api
-# pr('./financial_management_api.R') %>% pr_run(port=8000)
 
 #* get historical transactions aggregated by month and category
 #* @param user_name key for config file to use
