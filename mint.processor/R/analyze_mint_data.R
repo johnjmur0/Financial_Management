@@ -25,8 +25,14 @@ summarize_transactions <- function(transactions_df, time_vec, config_list, histo
 #'
 #' @export
 #'
-create_projections_df <- function(historical_transactions_df, accounts_df, config_list, forecast_date_range) {
-  projection_df <- tibble("timestamp" = seq(min(forecast_date_range), max(forecast_date_range), by = "month"))
+create_projections_df <- function(historical_transactions_df, 
+                                  accounts_df, 
+                                  config_list, 
+                                  forecast_date_range) {
+  
+  projection_df <- tibble("timestamp" = seq(min(forecast_date_range), 
+                                            max(forecast_date_range), 
+                                            by = "month"))
 
   starting_accounts_df <- accounts_df %>%
     mutate("timestamp" = min(forecast_date_range)) %>%

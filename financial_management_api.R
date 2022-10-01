@@ -1,13 +1,11 @@
-library(dplyr)
-library(reticulate)
-
-# Command to manually launch api
-# pr('./financial_management_api.R') %>% pr_run(port=8000)
+# library(dplyr)
+# library(reticulate)
+library(utilities)
+library(mint.processor)
 
 #* get historical transactions aggregated by month and category
 #* @param user_name key for config file to use
 #* @param historical_start_year start year for data return
-#* @param time_vec time vector to aggregate on
 #* @param read_cache whether to read transactions from cache if possible
 #* @param write_cache whether to overwrite transactions in cache if not reading
 #* @post /get_historical_by_category
@@ -32,7 +30,7 @@ get_historical_by_category <- function(user_name,
 }
 
 #* get current account values
-#* @param user_name key for config file to us
+#* @param user_name key for config file to use
 #* @param read_cache whether to read accounts from cache if possible
 #* @param write_cache whether to overwrite transactions in cache if not reading
 #* @post /get_current_accounts
@@ -45,7 +43,7 @@ get_current_accounts <- function(user_name,
 }
 
 #* get current monthly account projection
-#* @param user_name key for config file to us
+#* @param user_name key for config file to use
 #* @param historical_start_year start for historical data
 #* @param forecast_end_year last full year to be forecasted
 #* @param read_cache whether to read accounts from cache if possible
@@ -55,9 +53,8 @@ get_current_projections <- function(user_name,
                                     historical_start_year,
                                     forecast_end_year,
                                     time_vec = c("year", "month"),
-                                    read_cache = TRUE,
+                                    read_cache = FALSE,
                                     write_cache = TRUE) {
-  
   config_list <- utilities::get_user_config(user_name)
 
   historical_transactions_df <- get_historical_by_category(
