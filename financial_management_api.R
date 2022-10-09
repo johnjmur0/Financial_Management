@@ -12,7 +12,7 @@ library(mint.processor)
 get_historical_by_category <- function(user_name,
                                        historical_start_year,
                                        time_vec = c("year", "month", "day"),
-                                       read_cache = FALSE,
+                                       read_cache = TRUE,
                                        write_cache = FALSE) {
   config_list <- utilities::get_user_config(user_name)
 
@@ -35,7 +35,7 @@ get_historical_by_category <- function(user_name,
 #* @param write_cache whether to overwrite transactions in cache if not reading
 #* @post /get_current_accounts
 get_current_accounts <- function(user_name,
-                                 read_cache = FALSE,
+                                 read_cache = TRUE,
                                  write_cache = FALSE) {
   accounts_df <- mint.processor::get_mint_data_by_type_memoised("accounts", user_name, read_cache, write_cache)
 

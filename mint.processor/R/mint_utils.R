@@ -24,16 +24,15 @@ aggregate_categories <- function(spend_df, category_list, col_name, time_vec) {
 #'
 clean_transactions_df <- function(transactions_df) {
   transactions_df %>%
-    tidyr::unnest_wider(category) %>%
-    mutate(date = lubridate::with_tz(date, "UTC")) %>%
+    janitor::clean_names() %>%
+    mutate(date = lubridate::with_tz(lubridate::mdy(date), "UTC")) %>%
     dplyr::filter(date <= Sys.time()) %>%
     mutate(
       amount = unlist(amount),
       year = lubridate::year(date),
       month = lubridate::month(date),
       day = as.numeric(lubridate::day(date))
-    ) %>%
-    rename(category = name)
+    )
 }
 
 #' clean raw accounts df
@@ -43,20 +42,19 @@ clean_transactions_df <- function(transactions_df) {
 #' @export
 #'
 clean_accounts_df <- function(accounts_df) {
-  print(accounts_df)
-
   accounts_df %>%
     dplyr::filter(systemStatus == "ACTIVE") %>%
-    mutate(currentBalance = unlist(currentBalance)) %>%
-    group_by(type) %>%
-    summarise(total = sum(currentBalance)) %>%
-    rename(account_type = type) %>%
+    rename(account_type = type, total = currentBalance) %>%
     select(account_type, total) %>%
     mutate(account_type = case_when(
-      account_type == "BankAccount" ~ "bank",
+      account_type %in% c("CreditAccount", "BankAccount", "CashAccount") ~ "bank",
       account_type == "InvestmentAccount" ~ "investment",
+      account_type == "LoanAccount" ~ "debt",
       TRUE ~ account_type
-    ))
+    )) %>%
+    group_by(account_type) %>%
+    summarise(total = sum(total)) %>%
+    dplyr::filter(total != 0)
 }
 
 summarise_categories <- function(transactions_df, config_list, start_date, agg_vec, include_outlier = TRUE) {
