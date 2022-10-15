@@ -6,3 +6,5 @@ It requires a significant amount of setup as well as utilization of Mint the sam
 So, while I do use it for my personal finances and as a sandbox for some demos like renv and R in VS Code, it's a public repo in order to display my love-hate relationship with R :)
 
 Feel free to reach out if you're a Mint user or an R user, though! 
+
+P.S. I deleted this git history b/c there was some personal info which I've sinced moved out of the repo.
