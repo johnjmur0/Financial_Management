@@ -33,7 +33,12 @@ get_historical_by_category <- function(user_name,
 get_current_accounts <- function(user_name,
                                  read_cache = TRUE,
                                  write_cache = FALSE) {
-  accounts_df <- mint.processor::get_mint_data_by_type_memoised("accounts", user_name, read_cache, write_cache)
+  accounts_df <- mint.processor::get_mint_data_by_type_memoised(
+    "accounts",
+    user_name,
+    read_cache,
+    write_cache
+  )
 
   accounts_df %>% mint.processor::clean_accounts_df()
 }
