@@ -1,10 +1,9 @@
-import pytest
+from src.call_mint_API import *
 
-from src import call_mint_API
 
-class Test_Mint_API():
+class Test_Mint_API:
+    def test_get_config(self):
 
-    def get_config_test(self):
+        test_config = get_user_config("jjm")
 
-        test_config = call_mint_API.get_config('jjm')
-        
+        assert len(test_config) > 0

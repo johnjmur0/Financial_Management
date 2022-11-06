@@ -25,11 +25,12 @@ aggregate_categories <- function(spend_df, category_list, col_name, time_vec) {
 clean_transactions_df <- function(transactions_df) {
   transactions_df %>%
     janitor::clean_names() %>%
-    mutate(date = lubridate::with_tz(lubridate::mdy(date), "UTC")) %>%
+    mutate(date = lubridate::with_tz(lubridate::ymd(date), "UTC")) %>%
     dplyr::filter(date <= Sys.time()) %>%
+    tidyr::unnest_wider(category) %>%
+    rename(category = name) %>%
     mutate(
       amount = unlist(amount),
-      amount = if_else(transaction_type == "debit", amount * -1, amount),
       year = lubridate::year(date),
       month = lubridate::month(date),
       day = as.numeric(lubridate::day(date))
@@ -52,7 +53,9 @@ clean_accounts_df <- function(accounts_df) {
       account_type == "InvestmentAccount" ~ "investment",
       account_type == "LoanAccount" ~ "debt",
       TRUE ~ account_type
-    )) %>%
+    ),
+      total = unlist(total),
+    ) %>%
     group_by(account_type) %>%
     summarise(total = sum(total)) %>%
     dplyr::filter(total != 0)
